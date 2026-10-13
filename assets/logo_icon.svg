@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <defs>
+    <linearGradient id="shieldBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#141C2B"/><stop offset="100%" stop-color="#090D14"/>
+    </linearGradient>
+    <linearGradient id="alphaGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0080FF"/><stop offset="50%" stop-color="#00D287"/><stop offset="100%" stop-color="#60FFAF"/>
+    </linearGradient>
+    <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="5" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+  <polygon points="100,12 178,52 178,148 100,188 22,148 22,52" fill="url(#shieldBg)" stroke="#22334D" stroke-width="2.5"/>
+  <line x1="22" y1="100" x2="178" y2="100" stroke="#1B283D" stroke-width="1.2" stroke-dasharray="3,3"/>
+  <line x1="100" y1="12" x2="100" y2="188" stroke="#1B283D" stroke-width="1.2" stroke-dasharray="3,3"/>
+  <rect x="52" y="108" width="9" height="28" rx="3" fill="#E74C3C" opacity="0.8"/>
+  <rect x="68" y="86" width="9" height="50" rx="3" fill="#F39C12" opacity="0.85"/>
+  <rect x="84" y="60" width="9" height="76" rx="3" fill="#00D287" opacity="0.9"/>
+  <g filter="url(#neonGlow)">
+    <path d="M72,148 L72,56 C72,52 76,49 80,51 L100,76 L120,51 C124,49 128,52 128,56 L128,102 L116,102 L116,72 L104,87 C102,90 98,90 96,87 L84,72 L84,148 Z" fill="#FFFFFF" opacity="0.95"/>
+    <path d="M128,95 L148,68 L148,148 L136,148 L136,110 L124,126 C121,130 115,128 115,123 L115,108 L128,95 Z" fill="url(#alphaGradient)"/>
+    <circle cx="148" cy="68" r="4.5" fill="#FFFFFF"/><circle cx="148" cy="68" r="9" fill="#00D287" opacity="0.4"/>
+  </g>
+</svg>

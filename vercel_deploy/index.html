@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>MPS-500 | Multimodal Market Prediction System</title>
+  <meta name="description" content="Hệ thống Dự báo Thị trường Đa phương thức S&P 500 kết hợp FinBERT và Machine Learning (Đồ án Nhóm 9 - Lớp 50K33).">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #080c14;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #f1f5f9;
+    }
+    .wrapper {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 100%;
+    }
+    .navbar {
+      height: 48px;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      z-index: 100;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand-logo {
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .brand-title {
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: -0.2px;
+      color: #ffffff;
+    }
+    .brand-sub {
+      font-size: 11px;
+      color: #94a3b8;
+      display: none;
+    }
+    @media (min-width: 640px) {
+      .brand-sub {
+        display: inline;
+      }
+    }
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0, 229, 153, 0.1);
+      border: 1px solid rgba(0, 229, 153, 0.3);
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #00e599;
+    }
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #00e599;
+      box-shadow: 0 0 8px #00e599;
+      animation: pulseDot 2s infinite ease-in-out;
+    }
+    @keyframes pulseDot {
+      0%, 100% { opacity: 0.5; transform: scale(0.9); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+    .iframe-container {
+      flex: 1;
+      width: 100%;
+      position: relative;
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+    .loader {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 50% 30%, #111a2e 0%, #080c14 70%);
+      z-index: 10;
+      transition: opacity 0.5s ease;
+      pointer-events: none;
+    }
+    .spinner {
+      width: 44px;
+      height: 44px;
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      border-top-color: #00e599;
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+      margin-bottom: 16px;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .loader-text {
+      font-size: 13px;
+      color: #94a3b8;
+      letter-spacing: 0.5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <nav class="navbar">
+      <div class="brand">
+        <div class="brand-logo">
+          <svg viewBox="0 0 200 200" width="100%" height="100%">
+            <polygon points="100,12 178,52 178,148 100,188 22,148 22,52" fill="#141C2B" stroke="#00e599" stroke-width="6"/>
+            <path d="M72,148 L72,56 L100,76 L128,56 L128,148" fill="none" stroke="#ffffff" stroke-width="12" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span class="brand-title">MPS-500</span>
+        <span class="brand-sub">| Multimodal Market Prediction System</span>
+      </div>
+      <div class="status-badge">
+        <span class="status-dot"></span>
+        <span>TRỰC TUYẾN</span>
+      </div>
+    </nav>
+    <div class="iframe-container">
+      <div id="loader" class="loader">
+        <div class="spinner"></div>
+        <div class="loader-text">Đang kết nối Cloud Terminal...</div>
+      </div>
+      <!-- Thay đổi URL sau khi triển khai lên Streamlit Community Cloud -->
+      <iframe
+        id="appFrame"
+        src="https://share.streamlit.io/"
+        title="MPS-500 Streamlit Dashboard"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen>
+      </iframe>
+    </div>
+  </div>
+
+  <script>
+    const iframe = document.getElementById('appFrame');
+    const loader = document.getElementById('loader');
+    iframe.onload = () => {
+      loader.style.opacity = '0';
+      setTimeout(() => {
+        loader.style.display = 'none';
+      }, 500);
+    };
+  </script>
+</body>
+</html>

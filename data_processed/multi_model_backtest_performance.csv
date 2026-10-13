@@ -1,0 +1,7 @@
+,Buy & Hold S&P 500 (Benchmark),Logistic Regression,Random Forest,LightGBM,XGBoost
+Cumulative Return,40.21%,9.44%,7.47%,20.28%,16.72%
+CAGR,21.68%,5.38%,4.27%,11.32%,9.39%
+Annual Volatility,17.07%,14.11%,15.14%,15.32%,15.44%
+Sharpe Ratio,1.06,0.23,0.15,0.58,0.46
+Max Drawdown,-18.18%,-14.11%,-20.93%,-20.51%,-20.77%
+Win Rate,58.20%,53.57%,55.25%,56.39%,57.89%

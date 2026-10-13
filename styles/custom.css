@@ -1,0 +1,796 @@
+/* ==========================================================================
+   MPS-500 Design System: Atmospheric Lighting & Dark Glassmorphism
+   Standard: Vercel / Linear / Bloomberg Web Terminal
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700;800&display=swap');
+
+/* --- Root & Canvas Background --- */
+html, body, [class*="css"] {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: #F0F4F8;
+}
+
+.stApp {
+    background: radial-gradient(circle at 50% 0%, #111a2e 0%, #080c14 65%, #05080d 100%) !important;
+    min-height: 100vh;
+}
+
+/* --- Fix Header Clipping & Layout Space --- */
+header[data-testid="stHeader"] {
+    background: transparent !important;
+    display: none !important; /* Ẩn header mặc định chống cắt xén */
+}
+
+.main .block-container {
+    padding-top: 1.5rem !important;
+    padding-bottom: 3.5rem !important;
+    max-width: 95% !important;
+}
+
+/* --- Sidebar Styling --- */
+section[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #0e1524 0%, #080c14 100%) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+}
+
+section[data-testid="stSidebar"] .stMarkdown h2, 
+section[data-testid="stSidebar"] .stMarkdown h3 {
+    color: #F0F4F8 !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+}
+
+/* --- Terminal Header Card --- */
+.terminal-header {
+    background: rgba(16, 24, 40, 0.65) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 14px !important;
+    padding: 18px 24px !important;
+    margin-bottom: 20px !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35) !important;
+}
+
+/* Crisp status dot */
+.live-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #00E599;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 7px;
+    vertical-align: middle;
+    box-shadow: 0 0 10px rgba(0, 229, 153, 0.5);
+}
+
+/* --- Metric Cards --- */
+.metric-card {
+    background: rgba(16, 24, 40, 0.65) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 14px !important;
+    padding: 18px 20px !important;
+    transition: all 0.25s ease-in-out !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35) !important;
+    height: 100%;
+}
+
+.metric-card:hover {
+    border-color: rgba(0, 229, 153, 0.35) !important;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45) !important;
+}
+
+.metric-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #8E9CAE;
+    letter-spacing: 0.9px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+
+.metric-value {
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 4px;
+    color: #F0F4F8;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.metric-delta {
+    font-size: 12.5px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.metric-subtext {
+    font-size: 11px;
+    color: #8E9CAE;
+    margin-top: 5px;
+    line-height: 1.4;
+}
+
+/* --- Hero Recommendation Card --- */
+.rec-hero-card {
+    background: rgba(16, 24, 40, 0.7) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 16px !important;
+    padding: 24px 28px !important;
+    margin: 22px 0 !important;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45) !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.rec-hero-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(0, 229, 153, 0.6), transparent);
+}
+
+/* --- Pill Badges --- */
+.pill-badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.pill-badge-bullish {
+    background: rgba(0, 229, 153, 0.12) !important;
+    border: 1px solid rgba(0, 229, 153, 0.35) !important;
+    color: #00E599 !important;
+    box-shadow: 0 0 10px rgba(0, 229, 153, 0.15) !important;
+}
+
+.pill-badge-bearish {
+    background: rgba(255, 77, 79, 0.12) !important;
+    border: 1px solid rgba(255, 77, 79, 0.35) !important;
+    color: #FF4D4F !important;
+}
+
+.pill-badge-neutral {
+    background: rgba(245, 166, 35, 0.12) !important;
+    border: 1px solid rgba(245, 166, 35, 0.35) !important;
+    color: #F5A623 !important;
+}
+
+.pill-badge-cyan {
+    background: rgba(0, 178, 255, 0.12) !important;
+    border: 1px solid rgba(0, 178, 255, 0.35) !important;
+    color: #00B2FF !important;
+}
+
+/* --- Modern Floating Pill Tabs --- */
+div[data-testid="stTabs"] [data-baseweb="tab-list"] {
+    background: rgba(16, 24, 40, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 9999px !important;
+    padding: 6px 8px !important;
+    gap: 6px !important;
+    display: inline-flex !important;
+    width: auto !important;
+    margin-bottom: 1.5rem !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25) !important;
+}
+
+div[data-testid="stTabs"] button {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    border-radius: 9999px !important;
+    padding: 8px 22px !important;
+    margin-right: 6px !important;
+    color: #8E9CAE !important;
+    font-weight: 600 !important;
+    font-size: 13px !important;
+    transition: all 0.25s ease !important;
+}
+
+div[data-testid="stTabs"] button:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #F0F4F8 !important;
+    border-color: rgba(255, 255, 255, 0.16) !important;
+}
+
+div[data-testid="stTabs"] button[aria-selected="true"] {
+    background: rgba(0, 229, 153, 0.12) !important;
+    border: 1px solid rgba(0, 229, 153, 0.45) !important;
+    color: #00E599 !important;
+    box-shadow: 0 0 16px rgba(0, 229, 153, 0.25) !important;
+}
+
+div[data-testid="stTabs"] [data-baseweb="tab-border"] {
+    display: none !important;
+}
+
+div[data-testid="stTabs"] [data-baseweb="tab-highlight"] {
+    display: none !important;
+}
+
+/* ==========================================================================
+   MPS-500: GITHUB-STYLE SLOW CINEMATIC MOTION & DESIGN SYSTEM
+   ========================================================================== */
+
+/* Trục ánh sáng dọc kết nối phân hệ */
+.github-spine-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    padding: 70px 0 35px 0;
+}
+
+.github-spine-line {
+    width: 2px;
+    height: 90px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.01) 0%, rgba(0, 229, 153, 0.4) 50%, rgba(99, 102, 241, 0.4) 100%);
+    box-shadow: 0 0 16px rgba(0, 229, 153, 0.25);
+}
+
+/* Huy hiệu 3D búng nảy chuyển động chậm (1.4s - 1.6s) */
+.github-bounce-badge {
+    position: relative;
+    width: 76px;
+    height: 76px;
+    border-radius: 26px;
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.65), inset 0 1px 2px rgba(255, 255, 255, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: -15px auto 25px auto;
+    z-index: 10;
+    font-size: 30px;
+    
+    /* Trạng thái ẩn ban đầu */
+    opacity: 0;
+    transform: translateY(50px) scale(0.65);
+    filter: blur(10px);
+    
+    /* Thời lượng chuyển động chậm 1.5s với độ đàn hồi êm ái */
+    transition: opacity 1.4s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 1.6s cubic-bezier(0.22, 1, 0.36, 1),
+                filter 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, transform, filter;
+}
+
+/* Vòm hào quang phát sáng nền */
+.github-bounce-badge::before {
+    content: '';
+    position: absolute;
+    width: 170px;
+    height: 170px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--badge-glow-color, rgba(0, 229, 153, 0.3)) 0%, transparent 70%);
+    opacity: 0;
+    transform: scale(0.5);
+    transition: opacity 1.8s ease 0.25s, transform 1.8s cubic-bezier(0.16, 1, 0.3, 1) 0.25s;
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Khi cuộn tới tầm mắt */
+.github-bounce-badge.in-view {
+    opacity: 1 !important;
+    transform: translateY(0) scale(1) !important;
+    filter: blur(0) !important;
+}
+
+.github-bounce-badge.in-view::before {
+    opacity: 1 !important;
+    transform: scale(1) !important;
+}
+
+.github-bounce-badge.in-view svg,
+.github-bounce-badge.in-view img,
+.github-bounce-badge.in-view span {
+    animation: slowFloat 6s ease-in-out infinite 1.6s;
+}
+
+@keyframes slowFloat {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-8px) rotate(1.5deg); }
+}
+
+/* Tiêu đề phân hệ xuất hiện trễ so le */
+.github-section-header {
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto 35px auto;
+    opacity: 0;
+    transform: translateY(35px);
+    filter: blur(6px);
+    transition: opacity 1.4s cubic-bezier(0.16, 1, 0.3, 1) 0.4s,
+                transform 1.5s cubic-bezier(0.16, 1, 0.3, 1) 0.4s,
+                filter 1.2s ease 0.4s;
+}
+
+.github-section-header.in-view {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+    filter: blur(0) !important;
+}
+
+.github-section-headline {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    background: linear-gradient(180deg, #FFFFFF 30%, #94A3B8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 10px 0 8px 0;
+}
+
+.github-section-sub {
+    font-size: 14.5px;
+    color: #94A3B8;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Card chứa nội dung phân hệ trượt vào sau cùng */
+.github-card-ambient {
+    opacity: 0;
+    transform: translateY(30px) scale(0.98);
+    filter: blur(4px);
+    transition: opacity 1.4s cubic-bezier(0.16, 1, 0.3, 1) 0.65s,
+                transform 1.5s cubic-bezier(0.16, 1, 0.3, 1) 0.65s,
+                filter 1.2s ease 0.65s,
+                border-color 0.4s ease;
+    background: rgba(15, 23, 42, 0.6) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 18px !important;
+    padding: 28px !important;
+    margin-bottom: 40px !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4) !important;
+}
+
+.github-card-ambient.in-view {
+    opacity: 1 !important;
+    transform: translateY(0) scale(1) !important;
+    filter: blur(0) !important;
+}
+
+/* Floating Navigation Bar */
+.floating-nav-bar {
+    position: fixed;
+    top: 20px;
+    right: 30px;
+    z-index: 9999;
+    display: flex;
+    gap: 6px;
+    background: rgba(11, 14, 20, 0.85);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 5px 10px;
+    border-radius: 9999px;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.55);
+}
+
+.floating-nav-link {
+    color: #94A3B8;
+    text-decoration: none !important;
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 9999px;
+    transition: all 0.2s ease;
+    display: inline-block;
+}
+
+.floating-nav-link:hover {
+    color: #00E599 !important;
+    background: rgba(0, 229, 153, 0.12) !important;
+}
+
+/* --- Sidebar Radio Segmented Cards --- */
+div[data-testid="stSidebar"] div[role="radiogroup"] {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    border: none !important;
+    padding: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+}
+
+div[data-testid="stSidebar"] div[role="radiogroup"] > label {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 10px !important;
+    padding: 10px 14px !important;
+    margin: 0 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    width: 100% !important;
+}
+
+div[data-testid="stSidebar"] div[role="radiogroup"] > label:hover {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-color: rgba(0, 229, 153, 0.3) !important;
+}
+
+div[data-testid="stSidebar"] div[role="radiogroup"] > label[data-checked="true"],
+div[data-testid="stSidebar"] div[role="radiogroup"] > label:has(input:checked) {
+    background: rgba(0, 229, 153, 0.1) !important;
+    border-color: #00E599 !important;
+    box-shadow: 0 0 12px rgba(0, 229, 153, 0.15) !important;
+}
+
+div[data-testid="stSidebar"] div[role="radiogroup"] div[data-checked="true"] > div,
+div[data-testid="stSidebar"] div[role="radiogroup"] input:checked + div,
+div[data-testid="stSidebar"] div[role="radiogroup"] input:checked ~ div {
+    background-color: #00E599 !important;
+    border-color: #00E599 !important;
+}
+
+/* --- Main Segmented Control for st.radio (Horizontal Mode) --- */
+div.main div[data-testid="stRadio"] > div[role="radiogroup"] {
+    background: rgba(16, 24, 40, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 9999px !important;
+    padding: 5px 8px !important;
+    display: inline-flex !important;
+    gap: 6px !important;
+    align-items: center !important;
+}
+
+div.main div[data-testid="stRadio"] > div[role="radiogroup"] > label {
+    background: transparent !important;
+    border-radius: 9999px !important;
+    padding: 6px 18px !important;
+    margin: 0 !important;
+    cursor: pointer !important;
+    color: #8E9CAE !important;
+    font-size: 12.5px !important;
+    font-weight: 600 !important;
+    transition: all 0.2s ease !important;
+    border: 1px solid transparent !important;
+}
+
+div.main div[data-testid="stRadio"] > div[role="radiogroup"] > label:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: #F0F4F8 !important;
+}
+
+div.main div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) {
+    background: rgba(0, 178, 255, 0.15) !important;
+    border: 1px solid rgba(0, 178, 255, 0.45) !important;
+    color: #00B2FF !important;
+    box-shadow: 0 0 12px rgba(0, 178, 255, 0.25) !important;
+}
+
+div.main div[data-testid="stRadio"] > div[role="radiogroup"] input[type="radio"] {
+    display: none !important;
+}
+
+div.main div[data-testid="stRadio"] > div[role="radiogroup"] div[data-testid="stWidgetLabel"] {
+    display: none !important;
+}
+
+/* --- Modern Frosted Glass Expanders & News Cards --- */
+.news-glass-card {
+    background: rgba(16, 24, 40, 0.65) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 14px !important;
+    padding: 16px 20px !important;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3) !important;
+    margin-bottom: 14px !important;
+    transition: all 0.25s ease !important;
+}
+
+.news-glass-card:hover {
+    border-color: rgba(0, 229, 153, 0.35) !important;
+    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.45) !important;
+}
+
+.news-glass-card summary::-webkit-details-marker {
+    display: none !important;
+}
+
+/* Container cho Donut Chart căn giữa lọt lòng */
+.donut-glass-container {
+    background: rgba(16, 24, 40, 0.65) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 14px !important;
+    padding: 16px 14px !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35) !important;
+    margin-bottom: 16px !important;
+    text-align: center !important;
+}
+
+/* Thẻ phân tích định lượng p_neu (Top 1 Feature) */
+.pneu-analysis-card {
+    background: rgba(16, 24, 40, 0.65) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border: 1px solid rgba(245, 166, 35, 0.35) !important;
+    border-left: 4px solid #F5A623 !important;
+    border-radius: 14px !important;
+    padding: 16px 20px !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35) !important;
+    margin-top: 14px !important;
+}
+
+div[data-testid="stExpander"] {
+    background: rgba(16, 24, 40, 0.6) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25) !important;
+    margin-bottom: 12px !important;
+    overflow: hidden !important;
+    transition: border-color 0.2s ease !important;
+}
+
+div[data-testid="stExpander"]:hover {
+    border-color: rgba(255, 255, 255, 0.16) !important;
+}
+
+div[data-testid="stExpander"] summary {
+    border-radius: 12px !important;
+    padding: 12px 18px !important;
+    color: #F0F4F8 !important;
+    font-weight: 600 !important;
+    font-size: 13.5px !important;
+}
+
+div[data-testid="stExpander"] summary:hover {
+    background: rgba(255, 255, 255, 0.04) !important;
+}
+
+/* --- Inputs & Buttons --- */
+.stTextInput input, .stTextArea textarea, .stSelectbox select {
+    background-color: rgba(16, 24, 40, 0.8) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: #F0F4F8 !important;
+    border-radius: 10px !important;
+    padding: 10px 14px !important;
+    font-size: 13.5px !important;
+}
+
+.stTextInput input:focus, .stTextArea textarea:focus {
+    border-color: #00B2FF !important;
+    box-shadow: 0 0 0 2px rgba(0, 178, 255, 0.25) !important;
+}
+
+.stButton button {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 10px !important;
+    color: #F0F4F8 !important;
+    font-weight: 600 !important;
+    padding: 10px 22px !important;
+    transition: all 0.25s ease !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important;
+}
+
+.stButton button:hover {
+    background: rgba(0, 229, 153, 0.15) !important;
+    border-color: rgba(0, 229, 153, 0.5) !important;
+    color: #00E599 !important;
+    box-shadow: 0 0 18px rgba(0, 229, 153, 0.25) !important;
+}
+
+/* --- Custom Glass Table --- */
+.stDataFrame {
+    background: rgba(16, 24, 40, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* ==========================================================================
+   MPS-500: HERO CINEMATIC INTRO GATEWAY (OPENING SPLASH STAGE)
+   ========================================================================== */
+
+html {
+    scroll-behavior: smooth !important;
+}
+
+.hero-intro-wrapper {
+    min-height: 82vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+    padding: 50px 20px 30px 20px;
+    margin-bottom: 25px;
+}
+
+.hero-logo-glow {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 22px;
+}
+
+.hero-logo-glow::before {
+    content: '';
+    position: absolute;
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0, 229, 153, 0.35) 0%, rgba(0, 163, 255, 0.15) 50%, transparent 70%);
+    z-index: 0;
+    pointer-events: none;
+    animation: heroPulseGlow 4.5s ease-in-out infinite;
+}
+
+.hero-logo-icon {
+    position: relative;
+    z-index: 1;
+    width: 110px;
+    height: 110px;
+    filter: drop-shadow(0 14px 32px rgba(0, 229, 153, 0.35));
+    animation: heroIconZoom 1.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    transform-origin: center center;
+}
+
+@keyframes heroIconZoom {
+    0% {
+        opacity: 0;
+        transform: scale(0.38) translateY(35px);
+        filter: blur(14px) drop-shadow(0 0 0 rgba(0,0,0,0));
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1.0) translateY(0);
+        filter: blur(0px) drop-shadow(0 16px 36px rgba(0, 229, 153, 0.35));
+    }
+}
+
+@keyframes heroPulseGlow {
+    0%, 100% {
+        transform: scale(0.88);
+        opacity: 0.55;
+    }
+    50% {
+        transform: scale(1.18);
+        opacity: 0.95;
+    }
+}
+
+.hero-title {
+    font-size: 48px !important;
+    font-weight: 900 !important;
+    letter-spacing: -1.2px !important;
+    line-height: 1.1 !important;
+    margin: 0 0 8px 0 !important;
+    background: linear-gradient(180deg, #FFFFFF 30%, #94A3B8 100%);
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    animation: heroFadeUp 1.4s cubic-bezier(0.16, 1, 0.3, 1) 0.25s backwards;
+}
+
+.hero-subtitle {
+    font-size: 21px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    color: #00E599;
+    margin: 0 0 16px 0;
+    text-transform: uppercase;
+    text-shadow: 0 0 20px rgba(0, 229, 153, 0.3);
+    animation: heroFadeUp 1.4s cubic-bezier(0.16, 1, 0.3, 1) 0.4s backwards;
+}
+
+.hero-attribution {
+    font-size: 13.5px;
+    color: #94A3B8;
+    max-width: 820px;
+    line-height: 1.6;
+    margin: 0 auto 36px auto;
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    padding: 10px 24px;
+    border-radius: 9999px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    animation: heroFadeUp 1.4s cubic-bezier(0.16, 1, 0.3, 1) 0.55s backwards;
+}
+
+.hero-scroll-cue {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    text-decoration: none !important;
+    cursor: pointer;
+    animation: heroFadeUp 1.4s cubic-bezier(0.16, 1, 0.3, 1) 0.7s backwards;
+}
+
+.hero-scroll-label {
+    font-size: 11.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.8px;
+    color: #64748B;
+    transition: color 0.25s ease;
+}
+
+.hero-scroll-cue:hover .hero-scroll-label {
+    color: #00E599;
+}
+
+.hero-scroll-arrow {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.04);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #00E599;
+    font-size: 14px;
+    animation: heroBounceDown 2.2s ease-in-out infinite;
+    transition: all 0.25s ease;
+}
+
+.hero-scroll-cue:hover .hero-scroll-arrow {
+    background: rgba(0, 229, 153, 0.15);
+    border-color: #00E599;
+    box-shadow: 0 0 16px rgba(0, 229, 153, 0.35);
+}
+
+@keyframes heroFadeUp {
+    0% {
+        opacity: 0;
+        transform: translateY(24px);
+        filter: blur(6px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+    }
+}
+
+@keyframes heroBounceDown {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(8px);
+    }
+}

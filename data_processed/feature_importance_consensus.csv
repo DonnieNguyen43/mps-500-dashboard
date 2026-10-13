@@ -1,0 +1,23 @@
+Tên biến đặc trưng,Nhóm bản chất,Hạng đồng thuận,Hạng Logistic,Hạng RF,Hạng LightGBM,Hạng XGBoost
+p_neu,Cảm xúc,2.25,2.0,1.0,4.0,2.0
+ret_1d,Kỹ thuật,3.5,4.0,2.0,1.0,7.0
+ret_5d,Kỹ thuật,6.75,6.0,6.0,3.0,12.0
+vol_change_1d,Kỹ thuật,7.5,15.0,3.0,2.0,10.0
+news_vol_ratio_5d,Cảm xúc,8.0,13.0,4.0,10.0,5.0
+bb_pct_b,Kỹ thuật,9.875,7.0,9.0,8.5,15.0
+dist_sma20,Kỹ thuật,10.0,11.0,12.0,13.0,4.0
+dist_sma50,Kỹ thuật,10.375,5.0,14.0,8.5,14.0
+rsi_14,Kỹ thuật,10.625,14.0,5.0,14.5,9.0
+sent_momentum_1d,Cảm xúc,10.75,20.0,15.0,5.0,3.0
+p_neg,Cảm xúc,11.0,3.0,13.0,12.0,16.0
+neg_ratio,Cảm xúc,11.0,1.0,19.0,16.0,8.0
+ret_2d,Kỹ thuật,11.25,12.0,10.0,6.0,17.0
+p_pos,Cảm xúc,12.0,22.0,8.0,7.0,11.0
+vol_ratio_sma20,Kỹ thuật,12.75,9.0,11.0,11.0,20.0
+sent_mean,Cảm xúc,13.0,8.0,16.0,22.0,6.0
+macd_diff,Kỹ thuật,14.125,18.0,20.0,17.5,1.0
+sent_std,Cảm xúc,14.125,19.0,7.0,17.5,13.0
+pos_ratio,Cảm xúc,16.625,16.0,17.0,14.5,19.0
+macd,Kỹ thuật,18.0,10.0,22.0,19.0,21.0
+sent_momentum_3d,Cảm xúc,19.25,21.0,18.0,20.0,18.0
+news_vol,Cảm xúc,20.25,17.0,21.0,21.0,22.0
