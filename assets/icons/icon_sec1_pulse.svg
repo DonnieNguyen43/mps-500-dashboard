@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="54" height="54" fill="none">
+  <!-- Vòng tròn ma trận xung nhịp -->
+  <circle cx="24" cy="24" r="21" stroke="#00E599" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.4"/>
+  <circle cx="24" cy="24" r="16" stroke="#00B2FF" stroke-width="1.2" opacity="0.6"/>
+  <!-- Trục tọa độ thời gian kép -->
+  <line x1="8" y1="24" x2="40" y2="24" stroke="#1E293B" stroke-width="1.5"/>
+  <line x1="24" y1="8" x2="24" y2="40" stroke="#1E293B" stroke-width="1.5"/>
+  <!-- Nến lượng tử 1 (Bullish Alpha t+5) -->
+  <line x1="18" y1="13" x2="18" y2="33" stroke="#00E599" stroke-width="1.5"/>
+  <rect x="15.5" y="17" width="5" height="11" rx="1.5" fill="#00E599"/>
+  <!-- Nến lượng tử 2 (Micro-pulse t+1) -->
+  <line x1="30" y1="16" x2="30" y2="35" stroke="#00B2FF" stroke-width="1.5"/>
+  <rect x="27.5" y="21" width="5" height="9" rx="1.5" fill="#00B2FF"/>
+  <!-- Điểm xung nhịp trung tâm phát sáng -->
+  <circle cx="24" cy="24" r="2.5" fill="#FFFFFF"/>
+</svg>

@@ -104,7 +104,7 @@ def plot_sp500_candlestick_macd(df: pd.DataFrame) -> go.Figure:
         fig.add_trace(
             go.Bar(
                 x=df_plot["Date"], y=df_plot["macd_diff"],
-                name="MACD Hist",
+                name="Chỉ báo động lượng MACD histogram",
                 marker_color=hist_colors
             ),
             row=2, col=1
@@ -157,8 +157,9 @@ def plot_confidence_gauge(prob_5d: float, threshold: float = cfg.THRESHOLD_OPTIM
     fig = go.Figure(go.Indicator(
         mode="gauge+number+delta",
         value=val_pct,
+        domain={'x': [0.08, 0.88], 'y': [0.02, 0.80]},
         delta={'reference': thresh_pct, 'increasing': {'color': cfg.COLOR_BULLISH}, 'decreasing': {'color': cfg.COLOR_BEARISH}},
-        number={'suffix': "%", 'font': {'size': 36, 'color': '#F0F4F8', 'family': 'JetBrains Mono'}},
+        number={'suffix': "%", 'font': {'size': 34, 'color': '#F0F4F8', 'family': 'JetBrains Mono'}},
         gauge={
             'axis': {'range': [0, 100], 'tickwidth': 1, 'tickcolor': '#8E9CAE'},
             'bar': {'color': bar_color, 'thickness': 0.28},
@@ -178,15 +179,23 @@ def plot_confidence_gauge(prob_5d: float, threshold: float = cfg.THRESHOLD_OPTIM
     ))
 
     fig.update_layout(
-        height=260,
-        margin=dict(l=20, r=20, t=30, b=20),
+        height=320,
+        margin=dict(l=25, r=42, t=55, b=15),
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(color=cfg.COLOR_TEXT_PRIMARY, family="Inter")
+        font=dict(color=cfg.COLOR_TEXT_PRIMARY, family="Inter"),
+        title=dict(
+            text="<b>ĐỒ THỊ ĐO LƯỜNG NGƯỠNG TỰ TIN (T+5)</b><br><span style='font-size:11px;color:#8E9CAE;'>Vùng xanh: Mua/Nắm giữ an toàn (≥ 42.0%) | Vùng đỏ: Cảnh báo hạ tỷ trọng</span>",
+            font=dict(size=12, color="#F0F4F8", family="Inter"),
+            x=0.5,
+            xanchor="center",
+            y=0.96,
+            yanchor="top"
+        )
     )
     return fig
 
-def plot_sentiment_donut_chart(sent_dict: dict, title: str = "CƠ CẤU CẢM XÚC THỊ TRƯỜNG THỰC TẾ TRONG NGÀY") -> go.Figure:
+def plot_sentiment_donut_chart(sent_dict: dict, title: str = "Cơ cấu cảm xúc thị trường thực tế trong ngày") -> go.Figure:
     """
     Vẽ biểu đồ Donut Chart (Plotly Pie) tròn mượt mà cho phân phối cảm xúc.
     Nền trong suốt, căn giữa hoàn hảo.
@@ -211,6 +220,7 @@ def plot_sentiment_donut_chart(sent_dict: dict, title: str = "CƠ CẤU CẢM X�
         labels=labels,
         values=values,
         hole=0.68,
+        domain=dict(x=[0.05, 0.95], y=[0.08, 0.92]),
         marker=dict(colors=colors, line=dict(color="#0b0e14", width=2)),
         textinfo="label+percent",
         textfont=dict(size=12, color="#F0F4F8", family="Inter, sans-serif"),
@@ -218,8 +228,8 @@ def plot_sentiment_donut_chart(sent_dict: dict, title: str = "CƠ CẤU CẢM X�
     ))
 
     fig.update_layout(
-        height=290,
-        margin=dict(l=15, r=15, t=35, b=15),
+        height=330,
+        margin=dict(l=25, r=25, t=42, b=42),
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
         showlegend=False,
@@ -275,8 +285,8 @@ def plot_feature_importance_consensus() -> go.Figure:
         insidetextanchor="middle"
     ))
 
-    layout = get_dark_plotly_layout(height=400, title="TOP 10 ĐẶC TRƯNG ĐỒNG THUẬN QUA 4 MÔ HÌNH HỌC MÁY")
-    layout["xaxis"]["title"] = "Điểm Hạng Đồng Thuận Trung Bình (Điểm càng nhỏ thứ hạng càng cao)"
+    layout = get_dark_plotly_layout(height=400, title="Top 10 đặc trưng đồng thuận qua 4 mô hình học máy")
+    layout["xaxis"]["title"] = "Điểm hạng đồng thuận trung bình (điểm càng nhỏ thứ hạng càng cao)"
     layout["yaxis"]["autorange"] = True
     fig.update_layout(layout)
     return fig
@@ -311,7 +321,7 @@ def plot_equity_curves() -> go.Figure:
     fig.add_trace(go.Scatter(
         x=dates, y=(opt_042 - 1.0) * 100,
         mode="lines",
-        name="Hybrid Tối Ưu P ≥ 0.42 (51.91% | Sharpe 1.60)",
+        name="Hybrid tối ưu P ≥ 0.42 (51.91% | Sharpe 1.60)",
         line=dict(color=cfg.COLOR_BULLISH, width=3.2)
     ))
 
@@ -325,7 +335,7 @@ def plot_equity_curves() -> go.Figure:
     fig.add_trace(go.Scatter(
         x=dates, y=(base_050 - 1.0) * 100,
         mode="lines",
-        name="Hybrid Gốc 0.50 (39.99% | Sharpe 1.36)",
+        name="Hybrid gốc 0.50 (39.99% | Sharpe 1.36)",
         line=dict(color=cfg.COLOR_BEARISH, width=1.6, dash="dot")
     ))
 
@@ -359,7 +369,7 @@ def plot_whatif_feature_attribution(whatif_res: dict) -> go.Figure:
         "Cơ cấu tâm lý vĩ mô (P_Pos, P_Neg, P_Neu)",
         "Tỷ lệ phân cực tin tức (Pos/Neg Ratio)",
         "Áp lực truyền thông & Khối lượng tin",
-        "DỊCH CHUYỂN XÁC SUẤT RÒNG (ΔP)"
+        "Dịch chuyển xác suất ròng (ΔP)"
     ]
 
     values = [
@@ -393,9 +403,9 @@ def plot_whatif_feature_attribution(whatif_res: dict) -> go.Figure:
 
     layout = get_dark_plotly_layout(
         height=320,
-        title="PHÂN RÃ ĐÓNG GÓP ĐẶC TRƯNG VÀO ĐỘ DỊCH CHUYỂN XÁC SUẤT (FEATURE ATTRIBUTION BREAKDOWN)"
+        title="Phân rã đóng góp đặc trưng vào độ dịch chuyển xác suất (Feature attribution breakdown)"
     )
-    layout["xaxis"]["title"] = "Mức độ đóng góp vào dịch chuyển xác suất (Điểm %)"
+    layout["xaxis"]["title"] = "Mức độ đóng góp vào dịch chuyển xác suất (điểm %)"
     layout["xaxis"]["zeroline"] = True
     layout["xaxis"]["zerolinecolor"] = "rgba(255,255,255,0.2)"
     layout["yaxis"]["autorange"] = "reversed"

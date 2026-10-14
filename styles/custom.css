@@ -6,13 +6,46 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700;800&display=swap');
 
 /* --- Root & Canvas Background --- */
+:root {
+    --ambient-r: 0;
+    --ambient-g: 229;
+    --ambient-b: 153;
+}
+
+body[data-active-section="section-1"],
+body:not([data-active-section]) {
+    --ambient-r: 0;
+    --ambient-g: 229;
+    --ambient-b: 153;
+}
+body[data-active-section="section-2"] {
+    --ambient-r: 0;
+    --ambient-g: 178;
+    --ambient-b: 255;
+}
+body[data-active-section="section-3"] {
+    --ambient-r: 168;
+    --ambient-g: 85;
+    --ambient-b: 247;
+}
+body[data-active-section="section-4"] {
+    --ambient-r: 245;
+    --ambient-g: 158;
+    --ambient-b: 11;
+}
+
 html, body, [class*="css"] {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     color: #F0F4F8;
 }
 
 .stApp {
-    background: radial-gradient(circle at 50% 0%, #111a2e 0%, #080c14 65%, #05080d 100%) !important;
+    background-color: #05080d !important;
+    background-image: 
+        radial-gradient(circle 850px at 55% 35%, rgba(var(--ambient-r), var(--ambient-g), var(--ambient-b), 0.14) 0%, rgba(var(--ambient-r), var(--ambient-g), var(--ambient-b), 0.05) 45%, transparent 80%),
+        linear-gradient(180deg, rgba(var(--ambient-r), var(--ambient-g), var(--ambient-b), 0.06) 0%, #05080d 100%) !important;
+    background-attachment: fixed !important;
+    transition: background-image 1.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
     min-height: 100vh;
 }
 
@@ -228,69 +261,122 @@ div[data-testid="stTabs"] [data-baseweb="tab-highlight"] {
 }
 
 /* ==========================================================================
-   MPS-500: GITHUB-STYLE SLOW CINEMATIC MOTION & DESIGN SYSTEM
+   MPS-500: SEAMLESS ATMOSPHERIC GLOW (HOA TAN KHONG GIAN KHONG VIEN HOP)
    ========================================================================== */
 
-/* Trục ánh sáng dọc kết nối phân hệ */
+/* 1. Xoa bo hoan toan vien hop, nen dong khung va padding tho */
+.quant-section-wrapper,
+div[class*="st-key-quant_section_"],
+div[data-testid="stVerticalBlockBorderWrapper"],
+div[data-testid="stVerticalBlock"] {
+    position: relative !important;
+    width: 100% !important;
+    background: transparent !important;       /* Tuyet doi trong suot, khong cat ngang boi box model */
+    border: none !important;                   /* Xoa sach moi duong vien ngan cach */
+    outline: none !important;
+    box-shadow: none !important;
+    border-radius: 0px !important;            /* Khong bo goc hop */
+    padding: 0 0 60px 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+}
+
+/* Triet tieu toan bo duong gach ngang mac dinh cua Streamlit */
+hr {
+    display: none !important;
+    border: none !important;
+    height: 0px !important;
+    background: transparent !important;
+    margin: 24px 0 !important;
+}
+
+/* 2. Truc anh sang xuyen suot khong bi cat ngang */
 .github-spine-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-    padding: 70px 0 35px 0;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    position: relative !important;
+    padding: 45px 0 25px 0 !important;
+    margin: 0 auto !important;
+    background: transparent !important;
+    border: none !important;
+    overflow: visible !important;
 }
 
+/* Duong chi anh sang keo dai 110px noi muot ma tu tren xuong */
 .github-spine-line {
-    width: 2px;
-    height: 90px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.01) 0%, rgba(0, 229, 153, 0.4) 50%, rgba(99, 102, 241, 0.4) 100%);
-    box-shadow: 0 0 16px rgba(0, 229, 153, 0.25);
+    width: 2px !important;
+    height: 110px !important;
+    margin-bottom: -15px !important;
+    z-index: 5 !important;
+    opacity: 0.85 !important;
 }
 
-/* Huy hiệu 3D búng nảy chuyển động chậm (1.4s - 1.6s) */
+.spine-to-sec1 { background: linear-gradient(180deg, transparent 0%, rgba(0, 229, 153, 0.7) 100%) !important; box-shadow: 0 0 16px rgba(0, 229, 153, 0.4) !important; }
+.spine-to-sec2 { background: linear-gradient(180deg, transparent 0%, rgba(0, 178, 255, 0.7) 100%) !important; box-shadow: 0 0 16px rgba(0, 178, 255, 0.4) !important; }
+.spine-to-sec3 { background: linear-gradient(180deg, transparent 0%, rgba(168, 85, 247, 0.7) 100%) !important; box-shadow: 0 0 16px rgba(168, 85, 247, 0.4) !important; }
+.spine-to-sec4 { background: linear-gradient(180deg, transparent 0%, rgba(245, 158, 11, 0.7) 100%) !important; box-shadow: 0 0 16px rgba(245, 158, 11, 0.4) !important; }
+
+/* 3. Huy hieu 3D noi bat trong khong gian mo */
 .github-bounce-badge {
-    position: relative;
-    width: 76px;
-    height: 76px;
-    border-radius: 26px;
-    background: rgba(15, 23, 42, 0.9);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.65), inset 0 1px 2px rgba(255, 255, 255, 0.25);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: -15px auto 25px auto;
-    z-index: 10;
-    font-size: 30px;
-    
-    /* Trạng thái ẩn ban đầu */
+    position: relative !important;
+    width: 92px !important;
+    height: 92px !important;
+    border-radius: 30px !important;
+    background: rgba(11, 16, 26, 0.95) !important;
+    border: 1px solid rgba(255, 255, 255, 0.16) !important;
+    box-shadow: 0 24px 50px rgba(0, 0, 0, 0.8), inset 0 1px 2px rgba(255, 255, 255, 0.3) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 auto 28px auto !important;
+    z-index: 10 !important;
+    overflow: visible !important;
     opacity: 0;
     transform: translateY(50px) scale(0.65);
     filter: blur(10px);
-    
-    /* Thời lượng chuyển động chậm 1.5s với độ đàn hồi êm ái */
     transition: opacity 1.4s cubic-bezier(0.16, 1, 0.3, 1),
                 transform 1.6s cubic-bezier(0.22, 1, 0.36, 1),
-                filter 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+                filter 1.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
     will-change: opacity, transform, filter;
 }
 
-/* Vòm hào quang phát sáng nền */
+/* 4. Quang sang vom toa tu do 360 do khong vieng cat (Floating Ambient Floodlight) */
 .github-bounce-badge::before {
-    content: '';
-    position: absolute;
-    width: 170px;
-    height: 170px;
-    border-radius: 50%;
-    background: radial-gradient(circle, var(--badge-glow-color, rgba(0, 229, 153, 0.3)) 0%, transparent 70%);
+    content: '' !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) scale(0.6) !important;
+    width: 620px !important;
+    height: 620px !important;
+    border-radius: 50% !important;
+    background: radial-gradient(circle, var(--badge-glow-color, rgba(0, 229, 153, 0.42)) 0%, rgba(0, 229, 153, 0.18) 28%, rgba(0, 229, 153, 0.04) 52%, transparent 72%) !important;
     opacity: 0;
-    transform: scale(0.5);
-    transition: opacity 1.8s ease 0.25s, transform 1.8s cubic-bezier(0.16, 1, 0.3, 1) 0.25s;
-    z-index: -1;
-    pointer-events: none;
+    transition: opacity 1.8s ease 0.25s, transform 1.8s cubic-bezier(0.16, 1, 0.3, 1) 0.25s !important;
+    z-index: -2 !important;
+    pointer-events: none !important;
+    filter: blur(14px) !important;
 }
 
-/* Khi cuộn tới tầm mắt */
+/* 5. Hao quang loi loi toa truc tiep sau huy hieu 3D (Intense Core Halo) */
+.github-bounce-badge::after {
+    content: '' !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) scale(0.6) !important;
+    width: 240px !important;
+    height: 240px !important;
+    border-radius: 50% !important;
+    background: radial-gradient(circle, var(--badge-glow-color, rgba(0, 229, 153, 0.6)) 0%, transparent 70%) !important;
+    opacity: 0;
+    transition: opacity 1.6s ease 0.2s, transform 1.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s !important;
+    z-index: -1 !important;
+    pointer-events: none !important;
+    filter: blur(6px) !important;
+}
+
 .github-bounce-badge.in-view {
     opacity: 1 !important;
     transform: translateY(0) scale(1) !important;
@@ -299,7 +385,12 @@ div[data-testid="stTabs"] [data-baseweb="tab-highlight"] {
 
 .github-bounce-badge.in-view::before {
     opacity: 1 !important;
-    transform: scale(1) !important;
+    transform: translate(-50%, -50%) scale(1) !important;
+}
+
+.github-bounce-badge.in-view::after {
+    opacity: 1 !important;
+    transform: translate(-50%, -50%) scale(1) !important;
 }
 
 .github-bounce-badge.in-view svg,
@@ -308,9 +399,159 @@ div[data-testid="stTabs"] [data-baseweb="tab-highlight"] {
     animation: slowFloat 6s ease-in-out infinite 1.6s;
 }
 
-@keyframes slowFloat {
-    0%, 100% { transform: translateY(0px) rotate(0deg); }
-    50% { transform: translateY(-8px) rotate(1.5deg); }
+/* Phong to SVG ben trong badge */
+.github-bounce-badge svg,
+.github-bounce-badge img {
+    width: 54px !important;
+    height: 54px !important;
+    filter: drop-shadow(0 4px 12px var(--badge-glow-color, rgba(0, 229, 153, 0.5)));
+}
+
+/* 6. Mau sac quang sang chuyen biet cho tung phan he (Theme Palettes) */
+.section-theme-pulse .github-bounce-badge::before,
+div[class*="st-key-quant_section_1"] .github-bounce-badge::before {
+    background: radial-gradient(circle, rgba(0, 229, 153, 0.44) 0%, rgba(0, 229, 153, 0.2) 28%, rgba(0, 229, 153, 0.04) 52%, transparent 72%) !important;
+}
+.section-theme-pulse .github-bounce-badge::after,
+div[class*="st-key-quant_section_1"] .github-bounce-badge::after {
+    background: radial-gradient(circle, rgba(0, 229, 153, 0.65) 0%, transparent 70%) !important;
+}
+
+.section-theme-nlp .github-bounce-badge::before,
+div[class*="st-key-quant_section_2"] .github-bounce-badge::before {
+    background: radial-gradient(circle, rgba(0, 178, 255, 0.44) 0%, rgba(0, 178, 255, 0.2) 28%, rgba(0, 178, 255, 0.04) 52%, transparent 72%) !important;
+}
+.section-theme-nlp .github-bounce-badge::after,
+div[class*="st-key-quant_section_2"] .github-bounce-badge::after {
+    background: radial-gradient(circle, rgba(0, 178, 255, 0.65) 0%, transparent 70%) !important;
+}
+
+.section-theme-alpha .github-bounce-badge::before,
+div[class*="st-key-quant_section_3"] .github-bounce-badge::before {
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.44) 0%, rgba(168, 85, 247, 0.2) 28%, rgba(168, 85, 247, 0.04) 52%, transparent 72%) !important;
+}
+.section-theme-alpha .github-bounce-badge::after,
+div[class*="st-key-quant_section_3"] .github-bounce-badge::after {
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.65) 0%, transparent 70%) !important;
+}
+
+.section-theme-shock .github-bounce-badge::before,
+div[class*="st-key-quant_section_4"] .github-bounce-badge::before {
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.44) 0%, rgba(245, 158, 11, 0.2) 28%, rgba(245, 158, 11, 0.04) 52%, transparent 72%) !important;
+}
+.section-theme-shock .github-bounce-badge::after,
+div[class*="st-key-quant_section_4"] .github-bounce-badge::after {
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.65) 0%, transparent 70%) !important;
+}
+
+/* ==========================================================================
+   MPS-500: SEAMLESS INFINITE DARK CANVAS (HOAN TOAN KHONG DONG KHUNG)
+   ========================================================================== */
+
+/* Triet tieu hoan toan tinh chat dong khung: Tat ca container phan he luon 100% trong suot */
+[data-mps-section],
+div[class*="st-key-quant_section_"],
+.quant-section-wrapper,
+div[data-testid="stVerticalBlockBorderWrapper"] {
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    border-radius: 0px !important;
+    padding: 0 0 50px 0 !important;
+    margin: 0 !important;
+}
+
+/* 1. Nhuom mau nen & vien cho CAC KHOI NOI DUNG CON (Charts, Cards, Tables, Expanders) */
+
+/* --- PHAN HE 1: DEN PHA XANH NGOC (EMERALD PULSE) --- */
+div[class*="st-key-quant_section_1"] .github-card-ambient,
+div[class*="st-key-quant_section_1"] .quant-card,
+div[class*="st-key-quant_section_1"] [data-testid="stPlotlyChart"],
+div[class*="st-key-quant_section_1"] .metric-card,
+[data-mps-section="sec1"] .github-card-ambient,
+[data-mps-section="sec1"] .quant-card,
+[data-mps-section="sec1"] [data-testid="stPlotlyChart"],
+[data-mps-section="sec1"] .metric-card {
+    background: linear-gradient(145deg, rgba(6, 28, 24, 0.78) 0%, rgba(9, 17, 24, 0.85) 100%) !important;
+    border: 1px solid rgba(0, 229, 153, 0.22) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45), 0 0 25px rgba(0, 229, 153, 0.06) !important;
+}
+
+/* --- PHAN HE 2: DEN PHA XANH CONG NGHE (ELECTRIC CYAN NLP) --- */
+div[class*="st-key-quant_section_2"] .github-card-ambient,
+div[class*="st-key-quant_section_2"] .quant-card,
+div[class*="st-key-quant_section_2"] .news-glass-card,
+div[class*="st-key-quant_section_2"] .pneu-analysis-card,
+div[class*="st-key-quant_section_2"] div[data-testid="stExpander"],
+div[class*="st-key-quant_section_2"] [data-testid="stPlotlyChart"],
+[data-mps-section="sec2"] .github-card-ambient,
+[data-mps-section="sec2"] .quant-card,
+[data-mps-section="sec2"] .news-glass-card,
+[data-mps-section="sec2"] .pneu-analysis-card,
+[data-mps-section="sec2"] div[data-testid="stExpander"],
+[data-mps-section="sec2"] [data-testid="stPlotlyChart"] {
+    background: linear-gradient(145deg, rgba(7, 22, 38, 0.78) 0%, rgba(9, 15, 26, 0.85) 100%) !important;
+    border: 1px solid rgba(0, 178, 255, 0.22) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45), 0 0 25px rgba(0, 178, 255, 0.06) !important;
+}
+
+/* --- PHAN HE 3: DEN PHA TIM HOANG GIA (ROYAL VIOLET ALPHA) --- */
+div[class*="st-key-quant_section_3"] .github-card-ambient,
+div[class*="st-key-quant_section_3"] .quant-card,
+div[class*="st-key-quant_section_3"] .glass-table-container,
+div[class*="st-key-quant_section_3"] table,
+div[class*="st-key-quant_section_3"] [data-testid="stPlotlyChart"],
+[data-mps-section="sec3"] .github-card-ambient,
+[data-mps-section="sec3"] .quant-card,
+[data-mps-section="sec3"] .glass-table-container,
+[data-mps-section="sec3"] table,
+[data-mps-section="sec3"] [data-testid="stPlotlyChart"] {
+    background: linear-gradient(145deg, rgba(24, 12, 38, 0.78) 0%, rgba(13, 10, 24, 0.85) 100%) !important;
+    border: 1px solid rgba(168, 85, 247, 0.24) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45), 0 0 28px rgba(168, 85, 247, 0.07) !important;
+}
+
+/* --- PHAN HE 4: DEN PHA VANG HO PHACH (WARM AMBER SHOCK) --- */
+div[class*="st-key-quant_section_4"] .github-card-ambient,
+div[class*="st-key-quant_section_4"] .quant-card,
+div[class*="st-key-quant_section_4"] .whatif-alert-card,
+div[class*="st-key-quant_section_4"] div[data-testid="stTextArea"] textarea,
+div[class*="st-key-quant_section_4"] table,
+div[class*="st-key-quant_section_4"] [data-testid="stPlotlyChart"],
+[data-mps-section="sec4"] .github-card-ambient,
+[data-mps-section="sec4"] .quant-card,
+[data-mps-section="sec4"] .whatif-alert-card,
+[data-mps-section="sec4"] div[data-testid="stTextArea"] textarea,
+[data-mps-section="sec4"] table,
+[data-mps-section="sec4"] [data-testid="stPlotlyChart"] {
+    background: linear-gradient(145deg, rgba(32, 20, 9, 0.78) 0%, rgba(18, 13, 8, 0.85) 100%) !important;
+    border: 1px solid rgba(245, 158, 11, 0.24) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45), 0 0 28px rgba(245, 158, 11, 0.07) !important;
+}
+
+/* 2. Truc anh sang & tieu de giu trong suot, tuyet doi khong bi hop hoa */
+.github-spine-wrapper,
+[data-mps-section] .github-spine-wrapper,
+div[class*="st-key-quant_section_"] .github-spine-wrapper {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 45px 0 25px 0 !important;
+}
+
+[data-mps-section] [data-mps-section] {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
 }
 
 /* Tiêu đề phân hệ xuất hiện trễ so le */
@@ -792,5 +1033,85 @@ html {
     }
     50% {
         transform: translateY(8px);
+    }
+}
+
+/* ==========================================================================
+   MPS-500: SECTION-BASED 3D VOLUMETRIC LOGO SCULPTURES & BILATERAL PARALLAX STAGE
+   ========================================================================== */
+
+div[class*="st-key-quant_section"],
+div[data-testid="stVerticalBlockBorderWrapper"],
+.mps-3d-stage {
+    overflow: visible !important;
+}
+
+.stApp {
+    overflow-x: clip !important;
+}
+
+.mps-3d-stage {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    pointer-events: none !important;
+    z-index: 0 !important;
+    overflow: visible !important;
+}
+
+.mps-3d-sculpture {
+    position: absolute !important;
+    pointer-events: none !important;
+    z-index: 0 !important;
+    will-change: transform, opacity;
+    transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease !important;
+    transform-style: preserve-3d !important;
+}
+
+.mps-3d-item {
+    pointer-events: none !important;
+    user-select: none !important;
+}
+
+.mps-3d-primary {
+    filter: drop-shadow(0 24px 38px rgba(0, 0, 0, 0.85)) !important;
+    opacity: 0.72;
+}
+
+.mps-3d-secondary {
+    filter: blur(10px) drop-shadow(0 14px 22px rgba(0, 0, 0, 0.75)) !important;
+    opacity: 0.36;
+}
+
+/* Đảm bảo các khối 3D neo sát viền trái và phải không bị cắt xén */
+@media (max-width: 1440px) {
+    .mps-3d-item[data-side="left"] {
+        left: -15px !important;
+        transform: scale(0.85) !important;
+    }
+    .mps-3d-item[data-side="right"] {
+        right: -15px !important;
+        transform: scale(0.85) !important;
+    }
+}
+
+@media (max-width: 1200px) {
+    .mps-3d-item[data-side="left"] {
+        left: 0px !important;
+        transform: scale(0.7) !important;
+        opacity: 0.35 !important;
+    }
+    .mps-3d-item[data-side="right"] {
+        right: 0px !important;
+        transform: scale(0.7) !important;
+        opacity: 0.35 !important;
+    }
+}
+
+@media (max-width: 850px) {
+    .mps-3d-stage {
+        display: none !important;
     }
 }

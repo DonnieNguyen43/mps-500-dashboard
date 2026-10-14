@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="54" height="54" fill="none">
+  <!-- Mang Tensor vi mach Transformer -->
+  <polygon points="24,7 40,36 8,36" stroke="#00A3FF" stroke-width="1.5" stroke-dasharray="2 2" opacity="0.35"/>
+  <circle cx="24" cy="24" r="18" stroke="#00A3FF" stroke-width="1.2" opacity="0.4"/>
+  <!-- Cac duong truyen dan Attention Weights -->
+  <line x1="24" y1="24" x2="24" y2="10" stroke="#00A3FF" stroke-width="1.8" opacity="0.8"/>
+  <line x1="24" y1="24" x2="36" y2="33" stroke="#00E599" stroke-width="1.8" opacity="0.8"/>
+  <line x1="24" y1="24" x2="12" y2="33" stroke="#F43F5E" stroke-width="1.8" opacity="0.8"/>
+  <line x1="24" y1="10" x2="36" y2="33" stroke="#334155" stroke-width="1.2"/>
+  <line x1="24" y1="10" x2="12" y2="33" stroke="#334155" stroke-width="1.2"/>
+  <line x1="12" y1="33" x2="36" y2="33" stroke="#334155" stroke-width="1.2"/>
+  <!-- 3 cuc cam xuc FinBERT (Neu, Pos, Neg) -->
+  <!-- Cuc Cho doi Neutral (Dinh) -->
+  <circle cx="24" cy="10" r="4.5" fill="#1E293B" stroke="#F59E0B" stroke-width="1.8"/>
+  <circle cx="24" cy="10" r="2" fill="#F59E0B"/>
+  <!-- Cuc Lac quan Positive (Goc phai) -->
+  <circle cx="36" cy="33" r="4.5" fill="#1E293B" stroke="#00E599" stroke-width="1.8"/>
+  <circle cx="36" cy="33" r="2" fill="#00E599"/>
+  <!-- Cuc Phong thu Negative (Goc trai) -->
+  <circle cx="12" cy="33" r="4.5" fill="#1E293B" stroke="#F43F5E" stroke-width="1.8"/>
+  <circle cx="12" cy="33" r="2" fill="#F43F5E"/>
+  <!-- Loi Attention Token trung tam -->
+  <circle cx="24" cy="24" r="3.5" fill="#00A3FF"/>
+  <circle cx="24" cy="24" r="1.5" fill="#FFFFFF"/>
+</svg>

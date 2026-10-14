@@ -144,8 +144,8 @@ def predict_dual_horizon(tech_row: pd.DataFrame, sent_dict: Dict) -> Dict:
     if is_long_5d:
         recommendation = {
             "action": "LONG",
-            "title": "MỞ VỊ THẾ MUA / TIẾP TỤC NẮM GIỮ (LONG)",
-            "badge": "BULLISH (LONG)",
+            "title": "Mở vị thế mua / Tiếp tục nắm giữ (Long)",
+            "badge": "Lạc quan (Long)",
             "color": cfg.COLOR_BULLISH,
             "bg_color": cfg.COLOR_BULLISH_BG,
             "rationale": (
@@ -157,8 +157,8 @@ def predict_dual_horizon(tech_row: pd.DataFrame, sent_dict: Dict) -> Dict:
     else:
         recommendation = {
             "action": "DEFENSIVE CASH",
-            "title": "HẠ TỶ TRỌNG / NẮM GIỮ TIỀN MẶT (DEFENSIVE CASH)",
-            "badge": "CẢNH BÁO RỦI RO (CASH)",
+            "title": "Hạ tỷ trọng / Nắm giữ tiền mặt (Defensive Cash)",
+            "badge": "Cảnh báo rủi ro (Cash)",
             "color": cfg.COLOR_BEARISH,
             "bg_color": cfg.COLOR_BEARISH_BG,
             "rationale": (
@@ -291,13 +291,13 @@ def predict_whatif_shift(tech_row: pd.DataFrame, base_sent_dict: Dict, headline:
     conf_delta = whatif_prob_5d - cfg.THRESHOLD_OPTIMAL
     if whatif_prob_5d >= cfg.THRESHOLD_OPTIMAL:
         if delta_p >= 0:
-            act_title = "MỞ VỊ THẾ MUA / CỦNG CỐ NẮM GIỮ (LONG)"
+            act_title = "Mở vị thế mua / Củng cố nắm giữ (Long)"
             act_rationale = (
                 f"Cú sốc vĩ mô tích cực củng cố đà tăng, nâng xác suất tăng khung tuần lên {whatif_prob_5d*100:.1f}% (+{delta_p*100:.2f}%). "
                 f"Biên an toàn vượt ngưỡng 42.0% đạt +{conf_delta*100:.1f}%. Tiếp tục duy trì vị thế Long vững chắc."
             )
         else:
-            act_title = "DUY TRÌ VỊ THẾ MUA / THEO DÕI CHẶN LỖ (LONG WITH TRAILING STOP)"
+            act_title = "Duy trì vị thế mua / Theo dõi chặn lỗ (Long with trailing stop)"
             act_rationale = (
                 f"Cú sốc vĩ mô kéo nhẹ xác suất xuống {whatif_prob_5d*100:.1f}% ({delta_p*100:.2f}%) nhưng vẫn bảo toàn trên ngưỡng tối ưu 42.0% (+{conf_delta*100:.1f}%). "
                 "Chiến lược giữ vị thế Long nhưng kích hoạt cơ chế quản trị rủi ro chặt chẽ, theo sát vùng hỗ trợ."
@@ -305,7 +305,7 @@ def predict_whatif_shift(tech_row: pd.DataFrame, base_sent_dict: Dict, headline:
         whatif_rec = {
             "action": "LONG",
             "title": act_title,
-            "badge": "BULLISH (LONG)",
+            "badge": "Lạc quan (Long)",
             "color": cfg.COLOR_BULLISH,
             "bg_color": cfg.COLOR_BULLISH_BG,
             "rationale": act_rationale
@@ -313,8 +313,8 @@ def predict_whatif_shift(tech_row: pd.DataFrame, base_sent_dict: Dict, headline:
     else:
         whatif_rec = {
             "action": "DEFENSIVE CASH",
-            "title": "HẠ TỶ TRỌNG KHẨN CẤP / CHUYỂN SANG TIỀN MẶT (DEFENSIVE CASH)",
-            "badge": "CẢNH BÁO RỦI RO (CASH)",
+            "title": "Hạ tỷ trọng khẩn cấp / Chuyển sang tiền mặt (Defensive Cash)",
+            "badge": "Cảnh báo rủi ro (Cash)",
             "color": cfg.COLOR_BEARISH,
             "bg_color": cfg.COLOR_BEARISH_BG,
             "rationale": (

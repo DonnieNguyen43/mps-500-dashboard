@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="54" height="54" fill="none">
+  <!-- Khung Khien Luong tu Alpha -->
+  <path d="M24 6 L38 12 V24 C38 33 24 41 24 41 C24 41 10 33 10 24 V12 Z" stroke="#88419D" stroke-width="1.5" opacity="0.5" fill="#0F172A" fill-opacity="0.6"/>
+  <!-- Duong chan troi chuan tham chieu (Benchmark Horizon) -->
+  <line x1="13" y1="28" x2="35" y2="28" stroke="#475569" stroke-width="1.2" stroke-dasharray="2 2"/>
+  <!-- Ky tu Alpha cach dieu ket hop duong cong von but pha -->
+  <path d="M15 28 C15 21 21 19 24 23 C26 26 29 30 33 28 C35 27 36 24 34 21 C31 16 23 17 20 22 C17 27 18 31 22 32 C26 33 30 29 35 15" stroke="#00E599" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Vong hao quang tim toi uu -->
+  <circle cx="24" cy="24" r="19" stroke="#A855F7" stroke-width="1" stroke-dasharray="4 4" opacity="0.3"/>
+  <!-- Diem cuc dai Alpha but pha -->
+  <circle cx="35" cy="15" r="2.5" fill="#FFFFFF"/>
+  <circle cx="35" cy="15" r="5" stroke="#00E599" stroke-width="1.2" opacity="0.6"/>
+</svg>

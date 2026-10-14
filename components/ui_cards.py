@@ -22,12 +22,24 @@ def get_logo_svg_inline(size_px: int = 52) -> str:
             pass
     return f'<div style="width: {size_px}px; height: {size_px}px; background: {cfg.COLOR_BULLISH}; border-radius: 12px; box-shadow: 0 0 16px rgba(0,229,153,0.3);"></div>'
 
+def get_section_icon_svg(icon_filename: str) -> str:
+    """Đọc tệp icon SVG định lượng độc bản và trả về chuỗi nhúng inline."""
+    icon_path = os.path.join(cfg.ASSETS_DIR, "icons", icon_filename)
+    if os.path.exists(icon_path):
+        try:
+            with open(icon_path, "r", encoding="utf-8") as f:
+                content = f.read().replace("\n", " ").replace("\r", " ")
+                return content
+        except Exception:
+            pass
+    return ""
+
 def render_floating_nav_bar():
     """
     Hiển thị thanh Floating Anchor Navigation ở góc trên bên phải để nhảy nhanh giữa các phân khu.
     """
     nav_html = """<div class="floating-nav-bar">
-<a href="#hero-intro" class="floating-nav-link">⚡ Mở đầu</a>
+<a href="#hero-intro" class="floating-nav-link">Mở đầu</a>
 <a href="#section-1" class="floating-nav-link">1. Tín hiệu & Dự báo</a>
 <a href="#section-2" class="floating-nav-link">2. Tin tức & FinBERT</a>
 <a href="#section-3" class="floating-nav-link">3. Kiểm định Đối đầu</a>
@@ -58,15 +70,15 @@ def render_hero_intro():
 <div id="main-terminal"></div>"""
     st.markdown(html_code, unsafe_allow_html=True)
 
-def render_section_spine_header(section_id: str, badge_icon: str, badge_glow_color: str, headline: str, subtitle: str):
+def render_section_spine_header(section_id: str, badge_icon: str, badge_glow_color: str, headline: str, subtitle: str, spine_class: str = "spine-to-sec1"):
     """
     Hiển thị Trục ánh sáng dọc kết nối phân hệ, Huy hiệu 3D búng nảy chuyển động chậm (1.4s - 1.6s)
     và Tiêu đề phân hệ lướt nhẹ từ dưới lên theo phong cách GitHub Cinematic Motion.
     """
     html_code = f"""<div id="{section_id}" class="github-spine-wrapper">
-<div class="github-spine-line"></div>
+<div class="github-spine-line {spine_class}"></div>
 <div class="github-bounce-badge" style="--badge-glow-color: {badge_glow_color};">
-<span>{badge_icon}</span>
+{badge_icon}
 </div>
 <div class="github-section-header">
 <h2 class="github-section-headline">{headline}</h2>
@@ -88,11 +100,11 @@ def render_terminal_header():
 <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
 <span class="live-dot"></span>
 <span style="font-size: 11px; font-weight: 700; color: {cfg.COLOR_BULLISH}; letter-spacing: 1.2px; text-transform: uppercase;">
-ĐỘNG CƠ ĐỊNH LƯỢNG TRỰC TUYẾN | S&P 500 (^GSPC)
+Động cơ định lượng trực tuyến | S&P 500 (^GSPC)
 </span>
 <span style="font-size: 11px; color: {cfg.COLOR_TEXT_SECONDARY};">|</span>
 <span style="font-size: 11px; color: {cfg.COLOR_TEXT_SECONDARY}; font-family: 'JetBrains Mono', monospace;">
-CHỈ SỐ CHÍNH: ^GSPC
+Chỉ số chính: ^GSPC
 </span>
 </div>
 <h1 style="margin: 0 0 4px 0; font-size: 26px; font-weight: 900; color: #F0F4F8; letter-spacing: -0.4px;">
@@ -105,7 +117,7 @@ CHỈ SỐ CHÍNH: ^GSPC
 </div>
 <div style="text-align: right;">
 <span class="pill-badge pill-badge-bullish" style="font-size: 11.5px; padding: 6px 16px;">
-CHIẾN LƯỢC TỐI ƯU: P ≥ 0.42 (SHARPE 1.60)
+Chiến lược tối ưu: P ≥ 0.42 (Sharpe 1.60)
 </span>
 </div>
 </div>
@@ -134,7 +146,7 @@ def render_market_metric_cards(price_info: dict, forecast_info: dict, sent_info:
 
     with col1:
         st.markdown(f"""<div class="metric-card">
-<div class="metric-label">CHỈ SỐ S&P 500 HIỆN HÀNH</div>
+<div class="metric-label">Chỉ số S&P 500 hiện hành</div>
 <div class="metric-value">{curr_price:,.2f}</div>
 <div class="metric-delta" style="color: {price_color};">
 {price_sign}{change_pts:.2f} ({price_sign}{change_pct:.2f}%)
@@ -145,10 +157,10 @@ def render_market_metric_cards(price_info: dict, forecast_info: dict, sent_info:
     with col2:
         color_t1 = cfg.COLOR_BULLISH if p_t1 >= 0.50 else cfg.COLOR_BEARISH
         st.markdown(f"""<div class="metric-card">
-<div class="metric-label">XÁC SUẤT NGẮN HẠN (t+1)</div>
+<div class="metric-label">Xác suất ngắn hạn (t+1)</div>
 <div class="metric-value" style="color: {color_t1};">{p_t1*100:.1f}%</div>
 <div class="metric-delta">
-<span class="pill-badge pill-badge-neutral" style="font-size: 10.5px;">ĐỘ NHIỄU CAO (24H)</span>
+<span class="pill-badge pill-badge-neutral" style="font-size: 10.5px;">Độ nhiễu cao (24h)</span>
 </div>
 <div class="metric-subtext">Mô hình XGBoost Lai 22 biến</div>
 </div>""", unsafe_allow_html=True)
@@ -158,7 +170,7 @@ def render_market_metric_cards(price_info: dict, forecast_info: dict, sent_info:
         color_t5 = cfg.COLOR_BULLISH if is_long else cfg.COLOR_BEARISH
         border_glow = f"border-left: 3px solid {color_t5}; box-shadow: 0 8px 32px rgba(0, 229, 153, 0.15);" if is_long else f"border-left: 3px solid {color_t5};"
         st.markdown(f"""<div class="metric-card" style="{border_glow}">
-<div class="metric-label">XÁC SUẤT KHUNG TUẦN (t+5)</div>
+<div class="metric-label">Xác suất khung tuần (t+5)</div>
 <div class="metric-value" style="color: {color_t5};">{p_t5*100:.1f}%</div>
 <div class="metric-delta" style="color: {color_t5}; font-weight: 700;">
 Mục tiêu P ≥ 42.0% ({"+" if p_t5 >= 0.42 else ""}{(p_t5 - 0.42)*100:.1f}%)
@@ -168,10 +180,10 @@ Mục tiêu P ≥ 42.0% ({"+" if p_t5 >= 0.42 else ""}{(p_t5 - 0.42)*100:.1f}%)
 
     with col4:
         st.markdown(f"""<div class="metric-card">
-<div class="metric-label">TÂM LÝ CHỜ ĐỢI VĨ MÔ (P_NEU)</div>
+<div class="metric-label">Tâm lý chờ đợi vĩ mô (P_Neu)</div>
 <div class="metric-value" style="color: {cfg.COLOR_NEUTRAL};">{p_neu*100:.1f}%</div>
 <div class="metric-delta">
-<span class="pill-badge pill-badge-cyan" style="font-size: 10.5px;">HẠNG 1 ĐỒNG THUẬN (2.25)</span>
+<span class="pill-badge pill-badge-cyan" style="font-size: 10.5px;">Hạng 1 đồng thuận (2.25)</span>
 </div>
 <div class="metric-subtext">Đo lường sự lưỡng lự trước tin FOMC/CPI</div>
 </div>""", unsafe_allow_html=True)
@@ -194,8 +206,8 @@ def render_recommendation_banner(forecast_info: dict):
 <span class="pill-badge {badge_cls}" style="font-size: 11px; padding: 4px 14px; box-shadow: {status_glow};">
 {rec['badge']}
 </span>
-<span style="font-size: 12.5px; font-weight: 600; color: {cfg.COLOR_TEXT_SECONDARY}; text-transform: uppercase; letter-spacing: 0.8px;">
-KHUYẾN NGHỊ ĐỊNH LƯỢNG CHO KHUNG TUẦN (5 PHIÊN)
+<span style="font-size: 12.5px; font-weight: 600; color: {cfg.COLOR_TEXT_SECONDARY}; letter-spacing: 0.5px;">
+Khuyến nghị định lượng cho khung tuần (5 phiên)
 </span>
 </div>
 <div style="font-size: 28px; font-weight: 900; color: #F0F4F8; margin-bottom: 10px; letter-spacing: -0.3px;">
@@ -206,8 +218,8 @@ KHUYẾN NGHỊ ĐỊNH LƯỢNG CHO KHUNG TUẦN (5 PHIÊN)
 </div>
 </div>
 <div style="text-align: right; background: rgba(0,0,0,0.35); padding: 18px 26px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.08); box-shadow: inset 0 2px 8px rgba(0,0,0,0.3);">
-<div style="font-size: 11px; text-transform: uppercase; color: {cfg.COLOR_TEXT_SECONDARY}; letter-spacing: 1px; font-weight: 700; margin-bottom: 2px;">
-ĐỘ TỰ TIN KHUNG 5D
+<div style="font-size: 11px; color: {cfg.COLOR_TEXT_SECONDARY}; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 2px;">
+Độ tự tin khung 5D
 </div>
 <div style="font-size: 36px; font-weight: 900; color: {rec['color']}; font-family: 'JetBrains Mono', monospace; line-height: 1.1;">
 {p_t5*100:.1f}%
@@ -321,51 +333,51 @@ def render_news_feed_card(news: dict, score: dict, is_open: bool = False):
 </details>"""
     st.markdown(card_html, unsafe_allow_html=True)
 
-def render_dominant_sentiment_badge(p_pos: float, p_neu: float, p_neg: float):
+def get_dominant_sentiment_badge_html(p_pos: float, p_neu: float, p_neg: float) -> str:
     """
-    Hiển thị Status Pill trạng thái tâm lý thị trường chủ đạo trong ngày:
-    - P_pos > 0.4: Thị trường Lạc quan (Bullish Bias)
-    - P_neu >= 0.4: Trạng thái Thận trọng / Chờ đợi vĩ mô (Neutral Caution)
-    - P_neg > 0.4: Áp lực Bán / Phòng thủ rủi ro (Bearish Defense)
+    Trả về thẻ span HTML Status Pill trạng thái tâm lý thị trường chủ đạo trong ngày.
     """
     if p_pos > 0.4:
-        badge_text = "🟢 Thị trường Lạc quan (Bullish Bias)"
+        badge_text = "🟢 Lạc quan (Bullish Bias)"
         bg = "rgba(16, 185, 129, 0.12)"
         color = "#10b981"
         border = "rgba(16, 185, 129, 0.35)"
     elif p_neu >= 0.4:
-        badge_text = "🟡 Trạng thái Thận trọng / Chờ đợi vĩ mô (Neutral Caution)"
+        badge_text = "🟡 Thận trọng / Chờ đợi vĩ mô (Neutral)"
         bg = "rgba(245, 158, 11, 0.12)"
         color = "#f59e0b"
         border = "rgba(245, 158, 11, 0.35)"
     elif p_neg > 0.4:
-        badge_text = "🔴 Áp lực Bán / Phòng thủ rủi ro (Bearish Defense)"
+        badge_text = "🔴 Áp lực bán / Phòng thủ (Bearish Defense)"
         bg = "rgba(244, 63, 94, 0.12)"
         color = "#f43f5e"
         border = "rgba(244, 63, 94, 0.35)"
     else:
         max_p = max(p_pos, p_neu, p_neg)
         if max_p == p_pos:
-            badge_text = "🟢 Thị trường Lạc quan (Bullish Bias)"
+            badge_text = "🟢 Lạc quan (Bullish Bias)"
             bg = "rgba(16, 185, 129, 0.12)"
             color = "#10b981"
             border = "rgba(16, 185, 129, 0.35)"
         elif max_p == p_neg:
-            badge_text = "🔴 Áp lực Bán / Phòng thủ rủi ro (Bearish Defense)"
+            badge_text = "🔴 Áp lực bán / Phòng thủ (Bearish Defense)"
             bg = "rgba(244, 63, 94, 0.12)"
             color = "#f43f5e"
             border = "rgba(244, 63, 94, 0.35)"
         else:
-            badge_text = "🟡 Trạng thái Thận trọng / Chờ đợi vĩ mô (Neutral Caution)"
+            badge_text = "🟡 Thận trọng / Chờ đợi vĩ mô (Neutral)"
             bg = "rgba(245, 158, 11, 0.12)"
             color = "#f59e0b"
             border = "rgba(245, 158, 11, 0.35)"
 
-    badge_html = f"""<div style="text-align: center; margin: 4px 0 12px 0;">
-<span style="background: {bg}; color: {color}; border: 1px solid {border}; border-radius: 9999px; padding: 6px 16px; font-size: 11.5px; font-weight: 700; letter-spacing: 0.4px; display: inline-block; box-shadow: 0 2px 10px rgba(0,0,0,0.2);">
-{badge_text}
-</span>
-</div>"""
+    return f'<span style="background: {bg}; color: {color}; border: 1px solid {border}; border-radius: 9999px; padding: 4px 12px; font-size: 11px; font-weight: 700; letter-spacing: 0.3px; display: inline-flex; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.2); white-space: nowrap;">{badge_text}</span>'
+
+def render_dominant_sentiment_badge(p_pos: float, p_neu: float, p_neg: float):
+    """
+    Hiển thị Status Pill trạng thái tâm lý thị trường chủ đạo trong ngày (dạng khối độc lập).
+    """
+    badge_span = get_dominant_sentiment_badge_html(p_pos, p_neu, p_neg)
+    badge_html = f'<div style="text-align: center; margin: 4px 0 12px 0;">{badge_span}</div>'
     st.markdown(badge_html, unsafe_allow_html=True)
 
 def render_glass_table(df: pd.DataFrame, highlight_keyword: str = "TỐI ƯU"):
@@ -494,7 +506,7 @@ def render_whatif_alert_card(whatif_res: dict):
     delta_color = cfg.COLOR_BULLISH if delta_p >= 0 else cfg.COLOR_BEARISH
     
     state_changed = whatif_res["state_changed"]
-    status_msg = "CẢNH BÁO ĐẢO CHIỀU DANH MỤC!" if state_changed else "TRẠNG THÁI DANH MỤC KHÔNG ĐỔI"
+    status_msg = "Cảnh báo đảo chiều danh mục!" if state_changed else "Trạng thái danh mục không đổi"
     status_pill = "pill-badge-bearish" if state_changed else "pill-badge-cyan"
 
     s_res = whatif_res["sentiment_result"]
@@ -502,7 +514,7 @@ def render_whatif_alert_card(whatif_res: dict):
     html_card = f"""<div style="background: rgba(16, 24, 40, 0.65); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid {delta_color}; border-radius: 14px; padding: 20px 24px; margin: 18px 0; box-shadow: 0 8px 32px rgba(0,0,0,0.35);">
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
 <div style="font-size: 16px; font-weight: 800; color: #F0F4F8; letter-spacing: -0.2px;">
-KẾT QUẢ ĐÁNH GIÁ CÚ SỐC VĨ MÔ GIẢ ĐỊNH
+Kết quả đánh giá cú sốc vĩ mô giả định
 </div>
 <span class="pill-badge {status_pill}">
 {status_msg}
@@ -510,17 +522,17 @@ KẾT QUẢ ĐÁNH GIÁ CÚ SỐC VĨ MÔ GIẢ ĐỊNH
 </div>
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-bottom: 14px;">
 <div style="background: rgba(0,0,0,0.3); padding: 12px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.06);">
-<div style="font-size: 11px; color: {cfg.COLOR_TEXT_SECONDARY}; text-transform: uppercase; font-weight: 700; margin-bottom: 3px;">CẢM XÚC TIN FINBERT</div>
+<div style="font-size: 11px; color: {cfg.COLOR_TEXT_SECONDARY}; font-weight: 700; margin-bottom: 3px;">Cảm xúc tin FinBERT</div>
 <div style="font-size: 17px; font-weight: 800; color: #F0F4F8;">{s_res['label']}</div>
 <div style="font-size: 11.5px; color: {cfg.COLOR_TEXT_SECONDARY}; font-family: 'JetBrains Mono', monospace;">Net Score: {s_res['net_score']:+.3f}</div>
 </div>
 <div style="background: rgba(0,0,0,0.3); padding: 12px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.06);">
-<div style="font-size: 11px; color: {cfg.COLOR_TEXT_SECONDARY}; text-transform: uppercase; font-weight: 700; margin-bottom: 3px;">XÁC SUẤT GỐC (5D)</div>
+<div style="font-size: 11px; color: {cfg.COLOR_TEXT_SECONDARY}; font-weight: 700; margin-bottom: 3px;">Xác suất gốc (5D)</div>
 <div style="font-size: 17px; font-weight: 800; color: #F0F4F8; font-family: 'JetBrains Mono', monospace;">{whatif_res['base_prob_5d']*100:.1f}%</div>
 <div style="font-size: 11.5px; color: {cfg.COLOR_TEXT_SECONDARY};">Vị thế: {whatif_res['base_recommendation']['badge']}</div>
 </div>
 <div style="background: rgba(0,0,0,0.3); padding: 12px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.06);">
-<div style="font-size: 11px; color: {cfg.COLOR_TEXT_SECONDARY}; text-transform: uppercase; font-weight: 700; margin-bottom: 3px;">XÁC SUẤT SAU CÚ SỐC (5D)</div>
+<div style="font-size: 11px; color: {cfg.COLOR_TEXT_SECONDARY}; font-weight: 700; margin-bottom: 3px;">Xác suất sau cú sốc (5D)</div>
 <div style="font-size: 17px; font-weight: 800; color: {delta_color}; font-family: 'JetBrains Mono', monospace;">{whatif_res['whatif_prob_5d']*100:.1f}%</div>
 <div style="font-size: 11.5px; color: {delta_color}; font-weight: 700; font-family: 'JetBrains Mono', monospace;">Dịch chuyển: {delta_sign}{delta_p*100:.2f}%</div>
 </div>
@@ -590,8 +602,8 @@ def render_whatif_explainability_card(whatif_res: dict):
         accent_color = cfg.COLOR_NEUTRAL
 
     html_narrative = f"""<div style="background: rgba(16, 24, 40, 0.65); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); border-left: 4px solid {accent_color}; border-radius: 14px; padding: 18px 22px; margin: 16px 0; font-size: 13.5px; line-height: 1.6; color: #C2CBD6; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);">
-<div style="font-size: 13px; font-weight: 800; color: {accent_color}; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.8px;">
-GIẢI TRÌNH 3 KÊNH TRUYỀN DẪN VĨ MÔ ĐỊNH LƯỢNG (EXPLAINABILITY ENGINE)
+<div style="font-size: 13px; font-weight: 800; color: {accent_color}; margin-bottom: 10px; letter-spacing: 0.5px;">
+Giải trình 3 kênh truyền dẫn vĩ mô định lượng (Explainability Engine)
 </div>
 <div style="margin-bottom: 8px;">{narrative_risk}</div>
 <div style="margin-bottom: 8px;">{narrative_neu}</div>
