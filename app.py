@@ -214,10 +214,8 @@ with st.container(key="quant_section_1"):
 
     with col_gauge:
         st.markdown("##### Đo lường xung lực và tham số kỹ thuật")
-        st.markdown(
-            render_confidence_gauge_card(forecast_result["prob_t5"], threshold=threshold_input),
-            unsafe_allow_html=True
-        )
+        fig_gauge = plot_confidence_gauge(forecast_result["prob_t5"], threshold=threshold_input)
+        st.plotly_chart(fig_gauge, use_container_width=True, config={'displayModeBar': False})
 
         rsi_val = float(calc_market_df['rsi_14'].iloc[-1])
         macd_val = float(calc_market_df['macd_diff'].iloc[-1])
@@ -250,7 +248,6 @@ with st.container(key="quant_section_1"):
                     <div style="font-size: 17px; font-weight: 700; font-family: 'Inter', sans-serif; font-variant-numeric: tabular-nums; color: {'#10B981' if dist_val >= 0 else '#F43F5E'};">{dist_val:+.2f}%</div>
                 </div>
             </div>
-        </div>
         </div>
         """, unsafe_allow_html=True)
 
