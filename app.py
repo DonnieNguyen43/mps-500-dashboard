@@ -70,7 +70,7 @@ st.set_page_config(
     page_title=cfg.APP_TITLE,
     page_icon="📈",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
 # Nạp Google Fonts (Inter & JetBrains Mono)
@@ -86,67 +86,8 @@ if os.path.exists(css_path):
     with open(css_path, "r", encoding="utf-8") as f:
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-# Section 2: Sidebar Controls
-with st.sidebar:
-    # 1. Hiển thị Logo Brand Card độc bản
-    if os.path.exists(cfg.LOGO_FULL_PATH):
-        st.image(cfg.LOGO_FULL_PATH, use_container_width=True)
-    elif os.path.exists(cfg.LOGO_PATH):
-        st.image(cfg.LOGO_PATH, use_container_width=True)
-    
-    st.markdown(
-        """
-        <div style="text-align: center; margin-top: -6px; margin-bottom: 14px;">
-            <span style="background: rgba(0, 192, 135, 0.12); color: #00c087; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 4px; border: 1px solid rgba(0,192,135,0.3);">
-                Trạng thái: Kết nối (Online)
-            </span>
-        </div>
-        """, 
-        unsafe_allow_html=True
-    )
-    st.markdown("---")
-    st.markdown("### Bảng điều khiển hệ thống")
-    
-    st.markdown(f"**Hệ thống:** `{cfg.APP_NAME}`")
-    st.markdown(f"**Chỉ số mục tiêu:** `{cfg.TICKER}` ({cfg.TICKER_NAME})")
-    
-    selected_horizon = st.radio(
-        "Khung thời gian mục tiêu:",
-        options=["Khung tuần (t+5 - Trọng tâm)", "Khung 1 ngày (t+1)"],
-        index=0,
-        help="Khung tuần (5 phiên) giúp lọc nhiễu vi mô và phát huy tối đa hiệu quả hấp thụ thông tin vĩ mô."
-    )
-
-    st.markdown("---")
-    st.markdown("### Thiết lập chiến lược")
-    
-    threshold_input = st.slider(
-        "Ngưỡng xác suất Long (P):",
-        min_value=0.35, max_value=0.60,
-        value=cfg.THRESHOLD_OPTIMAL, step=0.01,
-        help="Ngưỡng tối ưu 0.42 được chứng minh trên Random Forest giúp đạt Sharpe 1.60 và lợi nhuận 51.91%."
-    )
-    if threshold_input == cfg.THRESHOLD_OPTIMAL:
-        st.success("Đang kích hoạt: Ngưỡng tối ưu (0.42)")
-    elif threshold_input == cfg.THRESHOLD_BASELINE:
-        st.info("Đang áp dụng: Ngưỡng tiêu chuẩn (0.50)")
-
-    st.markdown(f"**Phí giao dịch giả định:** `{cfg.TRADING_FEE*100:.2f}% / lượt`")
-
-    st.markdown("---")
-    st.markdown("### Cấu trúc mô hình định lượng")
-    st.markdown("• **FinBERT:** `ProsusAI/finbert` (110M tham số)\n"
-                "• **Phân loại t+5:** `Random Forest Hybrid` (150 cây)\n"
-                "• **Phân loại t+1:** `XGBoost Hybrid` (100 cây)\n"
-                "• **Số đặc trưng:** `22 biến lai` (11 KT + 11 CX)")
-
-    if st.button("Làm mới dữ liệu thị trường"):
-        st.cache_data.clear()
-        st.rerun()
-
-    st.markdown("---")
-    st.markdown(f"<div style='font-size: 11px; color: {cfg.COLOR_TEXT_SECONDARY}; line-height: 1.5;'>"
-                f"{cfg.AUTHOR_INFO}<br>{cfg.SUPERVISOR}</div>", unsafe_allow_html=True)
+# Section 2: Cấu hình tham số mặc định (Ẩn Sidebar theo yêu cầu UI)
+threshold_input = cfg.THRESHOLD_OPTIMAL
 
 # Section 3: Data Ingestion & Signal Inference
 # 1. Dữ liệu giá & kỹ thuật
@@ -577,17 +518,16 @@ with st.container(key="quant_section_3"):
     else:
         ds_desc = "Toàn bộ chuỗi dữ liệu thực nghiệm (2,169 phiên, 2016 - 2026) kiểm tra sức bền của chiến lược qua các chu kỳ kinh tế, cú sốc Covid-19 và chu kỳ thắt chặt tiền tệ."
 
-    st.markdown(f"""
-    <div style="background: rgba(15, 23, 42, 0.65); border: 1px solid rgba(255, 255, 255, 0.08); border-left: 3px solid #38BDF8; border-radius: 8px; padding: 11px 16px; margin-bottom: 16px; font-size: 12.5px; color: #CBD5E1; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
-        <div style="line-height: 1.5;">
-            <strong style="color: #F8FAFC;">Tập dữ liệu:</strong> {ds_desc}
-            {" | <span style='color: #94A3B8;'>Ngưỡng P=0.42 trên T+5 triệt tiêu 71.7% whipsaw đảo vị thế, tối ưu chi phí ma sát.</span>" if (horizon_clean == "T+5" and abs(selected_threshold - 0.42) < 0.005) else ""}
-        </div>
-        <span style="font-size: 11px; font-weight: 600; font-family: 'Inter', sans-serif; color: #38BDF8; background: rgba(56, 189, 248, 0.10); padding: 3px 10px; border-radius: 6px; border: 1px solid rgba(56, 189, 248, 0.25); white-space: nowrap;">
-            {dataset_badge_text}
-        </span>
-    </div>
-    """, unsafe_allow_html=True)
+    extra_note = ""
+    if horizon_clean == "T+5" and abs(selected_threshold - 0.42) < 0.005:
+        extra_note = " | <span style='color: #94A3B8;'>Ngưỡng P=0.42 trên T+5 triệt tiêu 71.7% whipsaw đảo vị thế, tối ưu chi phí ma sát.</span>"
+
+    st.markdown(f"""<div style="background: rgba(15, 23, 42, 0.65); border: 1px solid rgba(255, 255, 255, 0.08); border-left: 3px solid #38BDF8; border-radius: 8px; padding: 11px 16px; margin-bottom: 16px; font-size: 12.5px; color: #CBD5E1; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+<div style="line-height: 1.5;">
+<strong style="color: #F8FAFC;">Tập dữ liệu:</strong> {ds_desc}{extra_note}
+</div>
+<span style="font-size: 11px; font-weight: 600; font-family: 'Inter', sans-serif; color: #38BDF8; background: rgba(56, 189, 248, 0.10); padding: 3px 10px; border-radius: 6px; border: 1px solid rgba(56, 189, 248, 0.25); white-space: nowrap;">{dataset_badge_text}</span>
+</div>""", unsafe_allow_html=True)
 
     # ── 2. THỰC THI KIỂM ĐỊNH THỰC TẾ (LIVE ENGINE RUN) ──
     with st.spinner(f"Đang tính toán động cơ kiểm định trên {dataset_badge_text}..."):
