@@ -60,7 +60,7 @@ def render_hero_intro():
 </div>
 <div class="hero-title">MPS-500</div>
 <div class="hero-subtitle">Multimodal Market Prediction System</div>
-<div class="hero-attribution">{cfg.AUTHOR_INFO} | {cfg.SUPERVISOR}</div>
+<div class="hero-attribution"><span class="hero-attr-group">{cfg.AUTHOR_INFO}</span><span class="hero-attr-sep"> | </span><span class="hero-attr-prof">{cfg.SUPERVISOR}</span></div>
 <a href="#main-terminal" class="hero-scroll-cue">
 <span class="hero-scroll-label">Khám phá Terminal Định lượng</span>
 <div class="hero-scroll-arrow">↓</div>

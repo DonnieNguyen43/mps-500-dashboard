@@ -58,6 +58,25 @@ MODEL_LGB_PATH = str(Path(MODELS_DIR) / "hybrid_lightgbm.pkl")
 MODEL_LR_PATH = str(Path(MODELS_DIR) / "hybrid_logistic_regression.pkl")
 SCALER_PATH = str(Path(MODELS_DIR) / "scaler_hybrid.pkl")
 
+# Mô hình kiểm thử cho khung 5 ngày (T+5)
+MODEL_RF_T5_PATH = str(Path(MODELS_DIR) / "model_rf_t5.joblib")
+MODEL_XGB_T5_PATH = str(Path(MODELS_DIR) / "model_xgb_t5.joblib")
+MODEL_LGB_T5_PATH = str(Path(MODELS_DIR) / "model_lgb_t5.joblib")
+MODEL_LR_T5_PATH = str(Path(MODELS_DIR) / "model_lr_t5.joblib")
+MODEL_PATH = MODEL_XGB_PATH
+
+# Danh mục mô hình học máy hỗ trợ kiểm định và suy luận
+AVAILABLE_MODELS = {
+    "XGBoost (T+1)": MODEL_XGB_PATH,
+    "Random Forest (T+1)": MODEL_RF_PATH,
+    "LightGBM (T+1)": MODEL_LGB_PATH,
+    "Logistic Regression (T+1)": MODEL_LR_PATH,
+    "Random Forest (T+5)": MODEL_RF_T5_PATH,
+    "XGBoost (T+5)": MODEL_XGB_T5_PATH,
+    "LightGBM (T+5)": MODEL_LGB_T5_PATH,
+    "Logistic Regression (T+5)": MODEL_LR_T5_PATH
+}
+
 # Thư mục hình ảnh đồ thị 300 DPI
 FIGURES_DIR = str(PROJECT_ROOT / "figures") if (PROJECT_ROOT / "figures").exists() else str(APP_DIR / "figures")
 
@@ -73,6 +92,9 @@ BENCHMARK_NAME = "Buy & Hold S&P 500"
 # Dải ngưỡng tự tin tối ưu được chứng minh trong Bảng 7 Báo cáo Nhóm 9
 THRESHOLD_OPTIMAL = 0.42   # Ngưỡng tối ưu trên Random Forest khung 5 ngày
 THRESHOLD_BASELINE = 0.50  # Ngưỡng nhị phân tiêu chuẩn
+DEFAULT_THRESHOLD = 0.42
+DEFAULT_FEE = 0.0005
+DEFAULT_MODEL_NAME = "Random Forest (T+5)"
 
 # Chi phí giao dịch thực tế
 TRADING_FEE = 0.0005       # 0.05% cho mỗi lần đảo vị thế
@@ -98,6 +120,7 @@ SENTIMENT_FEATURES = [
 ]
 
 ALL_22_FEATURES = TECH_FEATURES + SENTIMENT_FEATURES
+ALL_FEATURES = ALL_22_FEATURES
 
 # Section 5: Design System Palette (Linear / Vercel / Bloomberg Luxury Dark Theme)
 COLOR_BG_DARK = "#080c14"                        # Canvas base

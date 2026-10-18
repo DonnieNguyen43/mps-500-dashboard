@@ -58,8 +58,11 @@ from components.ui_cards import (
 from components.charts import (
     plot_sp500_candlestick_macd, plot_confidence_gauge,
     plot_feature_importance_consensus, plot_equity_curves,
-    plot_sentiment_donut_chart, plot_whatif_feature_attribution
+    plot_sentiment_donut_chart, plot_whatif_feature_attribution,
+    plot_real_equity_curve, plot_real_drawdown_curve,
+    plot_real_dual_chart, plot_feature_importance_for_model
 )
+from modules.backtester import run_out_of_sample_backtest
 
 # Section 1: Streamlit Configuration
 st.set_page_config(
@@ -68,6 +71,13 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
+# Nạp Google Fonts (Inter & JetBrains Mono)
+st.markdown("""
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700;800&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+""", unsafe_allow_html=True)
 
 # Nạp file CSS giao diện Bloomberg Dark Theme
 css_path = os.path.join(os.path.dirname(__file__), "styles", "custom.css")
@@ -215,28 +225,29 @@ with st.container(key="quant_section_1"):
         dist_color = cfg.COLOR_BULLISH if dist_val >= 0 else cfg.COLOR_BEARISH
 
         st.markdown(f"""
-        <div class="quant-card" style="margin-top: 12px; padding: 16px 20px; border-radius: 16px;">
-            <div style="font-size: 11px; font-weight: 700; color: #8E9CAE; letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 12px;">
+        <div class="quant-card" style="margin-top: 12px; padding: 16px 18px; border-radius: 14px; background: rgba(15, 23, 42, 0.65); border: 1px solid rgba(255, 255, 255, 0.08);">
+            <div style="font-size: 11px; font-weight: 600; color: #94A3B8; letter-spacing: 0.6px; text-transform: uppercase; margin-bottom: 12px; font-family: 'Inter', sans-serif;">
                 Thông số kỹ thuật phiên hiện hành
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 10px 14px;">
-                    <div style="font-size: 11px; color: #8E9CAE; margin-bottom: 2px;">RSI (14 phiên)</div>
-                    <div style="font-size: 18px; font-weight: 800; font-family: 'JetBrains Mono', monospace; color: #F0F4F8;">{rsi_val:.2f}</div>
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 10px 14px;">
+                    <div style="font-size: 11px; color: #64748B; margin-bottom: 3px; font-family: 'Inter', sans-serif;">RSI (14 phiên)</div>
+                    <div style="font-size: 17px; font-weight: 700; font-family: 'Inter', sans-serif; font-variant-numeric: tabular-nums; color: #F8FAFC;">{rsi_val:.2f}</div>
                 </div>
-                <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 10px 14px;">
-                    <div style="font-size: 11px; color: #8E9CAE; margin-bottom: 2px;">MACD Histogram</div>
-                    <div style="font-size: 18px; font-weight: 800; font-family: 'JetBrains Mono', monospace; color: {macd_color};">{macd_val:+.4f}</div>
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 10px 14px;">
+                    <div style="font-size: 11px; color: #64748B; margin-bottom: 3px; font-family: 'Inter', sans-serif;">MACD Histogram</div>
+                    <div style="font-size: 17px; font-weight: 700; font-family: 'Inter', sans-serif; font-variant-numeric: tabular-nums; color: {'#10B981' if macd_val >= 0 else '#F43F5E'};">{macd_val:+.4f}</div>
                 </div>
-                <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 10px 14px;">
-                    <div style="font-size: 11px; color: #8E9CAE; margin-bottom: 2px;">Bollinger %B</div>
-                    <div style="font-size: 18px; font-weight: 800; font-family: 'JetBrains Mono', monospace; color: #F0F4F8;">{bb_val:.3f}</div>
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 10px 14px;">
+                    <div style="font-size: 11px; color: #64748B; margin-bottom: 3px; font-family: 'Inter', sans-serif;">Bollinger %B</div>
+                    <div style="font-size: 17px; font-weight: 700; font-family: 'Inter', sans-serif; font-variant-numeric: tabular-nums; color: #F8FAFC;">{bb_val:.3f}</div>
                 </div>
-                <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 10px 14px;">
-                    <div style="font-size: 11px; color: #8E9CAE; margin-bottom: 2px;">Độ lệch SMA50</div>
-                    <div style="font-size: 18px; font-weight: 800; font-family: 'JetBrains Mono', monospace; color: {dist_color};">{dist_val:+.2f}%</div>
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 10px 14px;">
+                    <div style="font-size: 11px; color: #64748B; margin-bottom: 3px; font-family: 'Inter', sans-serif;">Độ lệch SMA50</div>
+                    <div style="font-size: 17px; font-weight: 700; font-family: 'Inter', sans-serif; font-variant-numeric: tabular-nums; color: {'#10B981' if dist_val >= 0 else '#F43F5E'};">{dist_val:+.2f}%</div>
                 </div>
             </div>
+        </div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -261,7 +272,7 @@ with st.container(key="quant_section_2"):
         badge_icon=get_section_icon_svg("icon_sec2_nlp.svg"),
         badge_glow_color="rgba(0, 178, 255, 0.45)",
         headline="Phân hệ 2: Luồng tin tức vĩ mô và giải mã cảm xúc FinBERT",
-        subtitle="Giải mã tâm lý tài chính thời gian thực với mô hình ngôn ngữ lớn ProsusAI/finbert (110 triệu tham số).",
+        subtitle="Giải mã tâm lý tài chính thời gian thực qua mô hình ngôn ngữ lớn ProsusAI/finbert với 110 triệu tham số.",
         spine_class="spine-to-sec2"
     )
 
@@ -322,7 +333,7 @@ with st.container(key="quant_section_2"):
         
         news_items = fetch_filtered_news(time_preset, start_date=start_d, end_date=end_d)
 
-    col_news_list, col_sent_pie = st.columns([0.65, 0.35])
+    col_news_list, col_sent_pie = st.columns([0.56, 0.44], gap="medium")
 
     with col_news_list:
         sub_title = "Luồng tin tức tài chính thực tế hôm nay (Live Feeds):" if is_live_mode else "Danh sách bản tin kinh tế vĩ mô lịch sử:"
@@ -389,8 +400,10 @@ with st.container(key="quant_section_2"):
             badge_html = get_dominant_sentiment_badge_html(p_pos_avg, p_neu_avg, p_neg_avg)
 
             st.markdown(f"""
-            <div style="display: flex; justify-content: space-between; align-items: center; min-height: 28px; margin-bottom: 8px;">
-                <span style="font-weight: 700; font-size: 14px; color: #F0F4F8;">Tâm lý thị trường tổng hợp:</span>
+            <div style="display: flex; justify-content: space-between; align-items: center; min-height: 32px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.08);">
+                <span style="font-weight: 700; font-size: 14px; color: #F0F4F8; display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 14px; font-weight: 700; color: #F0F4F8;">Tâm lý thị trường tổng hợp:</span>
+                </span>
                 {badge_html}
             </div>
             """, unsafe_allow_html=True)
@@ -420,8 +433,10 @@ with st.container(key="quant_section_2"):
             badge_html = get_dominant_sentiment_badge_html(active_sent_dict["p_pos"], active_sent_dict["p_neu"], active_sent_dict["p_neg"])
 
             st.markdown(f"""
-            <div style="display: flex; justify-content: space-between; align-items: center; min-height: 28px; margin-bottom: 8px;">
-                <span style="font-weight: 700; font-size: 14px; color: #F0F4F8;">Tâm lý thị trường tổng hợp:</span>
+            <div style="display: flex; justify-content: space-between; align-items: center; min-height: 32px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.08);">
+                <span style="font-weight: 700; font-size: 14px; color: #F0F4F8; display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 14px; font-weight: 700; color: #F0F4F8;">Tâm lý thị trường tổng hợp:</span>
+                </span>
                 {badge_html}
             </div>
             """, unsafe_allow_html=True)
@@ -456,61 +471,329 @@ with st.container(key="quant_section_3"):
         section_id="section-3",
         badge_icon=get_section_icon_svg("icon_sec3_alpha.svg"),
         badge_glow_color="rgba(168, 85, 247, 0.45)",
-        headline="Phân hệ 3: Kiểm định chiến lược ngoài mẫu và đối đầu tài chính",
-        subtitle="Đối đầu thực nghiệm 434 phiên ngoài mẫu giữa mô hình lai tối ưu P >= 0.42 và điểm chuẩn S&P 500.",
+        headline="Phân hệ 3: Kiểm định chiến lược ngoài mẫu & Đối đầu tài chính",
+        subtitle="Động cơ kiểm định định lượng trên tập ngoài mẫu 20% (Test-set 434 phiên) và toàn bộ chuỗi lịch sử (2.169 phiên). Tùy chọn mô hình, khung T+1 & T+5 và tối ưu hóa ngưỡng xác suất P.",
         spine_class="spine-to-sec3"
     )
 
-    st.markdown("##### 1. Đối đầu đường cong tăng trưởng vốn trên tập kiểm thử ngoài mẫu (434 phiên)")
-    fig_equity = plot_equity_curves()
-    st.plotly_chart(fig_equity, use_container_width=True, config={'displayModeBar': False})
+    # ── 1. BẢNG ĐIỀU KHIỂN THỰC NGHIỆM ĐỊNH LƯỢNG (INTERACTIVE QUANT CONTROLS) ──
+    st.markdown("""
+    <div style="background: rgba(16, 24, 40, 0.70); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 18px 22px 14px 22px; margin-bottom: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.35);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 13.5px; font-weight: 700; color: #F0F4F8; letter-spacing: 0.8px; text-transform: uppercase;">Bảng điều khiển kiểm định thực nghiệm định lượng</span>
+            </div>
+            <span style="font-size: 11px; font-weight: 600; font-family: \'Inter\', sans-serif; color: #38BDF8; background: rgba(56, 189, 248, 0.10); padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(56, 189, 248, 0.25); letter-spacing: 0.5px;">DATASET QUANT ENGINE</span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
-    # Bảng chỉ số tài chính Bảng 5 dạng Glass Table tương phản cao
-    st.markdown("##### 2. Hiệu năng các chiến lược trên tập kiểm thử (Bảng 5)")
-    df_b5 = pd.DataFrame([
-        {"Chiến lược giao dịch": "Mua & Nắm giữ S&P 500 (Benchmark)", "Lợi nhuận tích lũy": "51.63%", "CAGR": "27.34%", "Biến động năm": "16.02%", "Hệ số Sharpe": "1.59", "Max Drawdown": "-15.54%", "Tỷ lệ thắng": "58.53%"},
-        {"Chiến lược giao dịch": "Hồi quy Logistic 1D (0.50)", "Lợi nhuận tích lũy": "14.03%", "CAGR": "7.92%", "Biến động năm": "14.04%", "Hệ số Sharpe": "0.61", "Max Drawdown": "-14.26%", "Tỷ lệ thắng": "56.23%"},
-        {"Chiến lược giao dịch": "Rừng ngẫu nhiên 1D (0.50)", "Lợi nhuận tích lũy": "24.49%", "CAGR": "13.57%", "Biến động năm": "14.66%", "Hệ số Sharpe": "0.94", "Max Drawdown": "-15.54%", "Tỷ lệ thắng": "57.23%"},
-        {"Chiến lược giao dịch": "LightGBM 1D (0.50)", "Lợi nhuận tích lũy": "17.64%", "CAGR": "9.89%", "Biến động năm": "14.59%", "Hệ số Sharpe": "0.72", "Max Drawdown": "-15.64%", "Tỷ lệ thắng": "55.84%"},
-        {"Chiến lược giao dịch": "XGBoost 1D (0.50)", "Lợi nhuận tích lũy": "29.93%", "CAGR": "16.42%", "Biến động năm": "14.94%", "Hệ số Sharpe": "1.09", "Max Drawdown": "-14.98%", "Tỷ lệ thắng": "57.40%"},
-        {"Chiến lược giao dịch": "Rừng ngẫu nhiên 5D TỐI ƯU (P ≥ 0.42)", "Lợi nhuận tích lũy": "51.91%", "CAGR": "27.48%", "Biến động năm": "14.85%", "Hệ số Sharpe": "1.60", "Max Drawdown": "-15.54%", "Tỷ lệ thắng": "60.00%"}
+    # Hàng 1: Chọn tập dữ liệu kiểm định & Chọn mô hình học máy
+    col_ds, col_model = st.columns([0.54, 0.46])
+
+    with col_ds:
+        dataset_options = [
+            "Tập kiểm thử ngoài mẫu (Test-set 20% | 434 phiên, 15/12/2023 - 07/04/2026)",
+            "Toàn bộ chuỗi dữ liệu thực nghiệm (2016 - 2026 | 2,169 phiên)"
+        ]
+        selected_dataset_raw = st.selectbox(
+            "Tập dữ liệu kiểm định:",
+            options=dataset_options,
+            index=0,
+            key="sec3_select_dataset"
+        )
+        if "test" in selected_dataset_raw.lower() or "ngoài mẫu" in selected_dataset_raw.lower():
+            dataset_code = "test_set_20"
+            dataset_badge_text = "TEST-SET NGOÀI MẪU 20% (434 PHIÊN)"
+        else:
+            dataset_code = "full"
+            dataset_badge_text = "TOÀN BỘ CHUỖI DỮ LIỆU (2,169 PHIÊN)"
+
+    with col_model:
+        model_options = [
+            "Random Forest (Rừng ngẫu nhiên)",
+            "XGBoost (Gradient Boosting)",
+            "LightGBM",
+            "Logistic Regression (Hồi quy Logistic)"
+        ]
+        selected_model_raw = st.selectbox(
+            "Mô hình định lượng:",
+            options=model_options,
+            index=0,
+            key="sec3_select_model"
+        )
+        if "random forest" in selected_model_raw.lower():
+            model_clean = "Random Forest"
+        elif "xgboost" in selected_model_raw.lower():
+            model_clean = "XGBoost"
+        elif "lightgbm" in selected_model_raw.lower():
+            model_clean = "LightGBM"
+        else:
+            model_clean = "Logistic Regression"
+
+    # Hàng 2: Khung thời gian, Ngưỡng xác suất P và Chế độ biểu đồ
+    col_ctrl2, col_ctrl3, col_mode = st.columns([0.28, 0.32, 0.40])
+
+    with col_ctrl2:
+        horizon_options = ["Khung 5 ngày (T+5)", "Khung 1 ngày (T+1)"]
+        selected_horizon_raw = st.radio(
+            "Khung thời gian dự báo:",
+            options=horizon_options,
+            horizontal=True,
+            index=0,
+            key="sec3_select_horizon"
+        )
+        horizon_clean = "T+5" if "5" in selected_horizon_raw else "T+1"
+
+    with col_ctrl3:
+        # Dynamic default threshold
+        default_p = 0.42 if horizon_clean == "T+5" else 0.50
+        selected_threshold = st.slider(
+            f"Ngưỡng xác suất P (Tối ưu: {default_p:.2f}):",
+            min_value=0.38,
+            max_value=0.58,
+            value=default_p,
+            step=0.01,
+            format="%.2f",
+            key=f"sec3_threshold_slider_{horizon_clean}_{dataset_code}"
+        )
+
+    with col_mode:
+        chart_mode = st.radio(
+            "Chế độ hiển thị biểu đồ:",
+            options=[
+                "Tăng trưởng vốn (Equity)",
+                "Sụt giảm vốn (Drawdown)",
+                "Song song (Dual View)"
+            ],
+            horizontal=True,
+            index=0,
+            key="sec3_chart_mode"
+        )
+
+    # Dynamic status info banner
+    if dataset_code == "test_set_20":
+        ds_desc = "Tập kiểm thử ngoài mẫu 20% (434 phiên out-of-sample) bảo đảm tính khách quan khoa học, triệt tiêu hoàn toàn rủi ro overfitting và rò rỉ dữ liệu (khớp 100% Báo cáo Bảng 5 & Bảng 7)."
+    else:
+        ds_desc = "Toàn bộ chuỗi dữ liệu thực nghiệm (2,169 phiên, 2016 - 2026) kiểm tra sức bền của chiến lược qua các chu kỳ kinh tế, cú sốc Covid-19 và chu kỳ thắt chặt tiền tệ."
+
+    st.markdown(f"""
+    <div style="background: rgba(15, 23, 42, 0.65); border: 1px solid rgba(255, 255, 255, 0.08); border-left: 3px solid #38BDF8; border-radius: 8px; padding: 11px 16px; margin-bottom: 16px; font-size: 12.5px; color: #CBD5E1; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+        <div style="line-height: 1.5;">
+            <strong style="color: #F8FAFC;">Tập dữ liệu:</strong> {ds_desc}
+            {" | <span style='color: #94A3B8;'>Ngưỡng P=0.42 trên T+5 triệt tiêu 71.7% whipsaw đảo vị thế, tối ưu chi phí ma sát.</span>" if (horizon_clean == "T+5" and abs(selected_threshold - 0.42) < 0.005) else ""}
+        </div>
+        <span style="font-size: 11px; font-weight: 600; font-family: 'Inter', sans-serif; color: #38BDF8; background: rgba(56, 189, 248, 0.10); padding: 3px 10px; border-radius: 6px; border: 1px solid rgba(56, 189, 248, 0.25); white-space: nowrap;">
+            {dataset_badge_text}
+        </span>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ── 2. THỰC THI KIỂM ĐỊNH THỰC TẾ (LIVE ENGINE RUN) ──
+    with st.spinner(f"Đang tính toán động cơ kiểm định trên {dataset_badge_text}..."):
+        backtest_res = run_out_of_sample_backtest(
+            model_name=model_clean,
+            horizon=horizon_clean,
+            threshold=selected_threshold,
+            fee_rate=cfg.TRADING_FEE,
+            dataset_source=dataset_code
+        )
+
+    m_ai = backtest_res["metrics_ai"]
+    m_bh = backtest_res["metrics_bh"]
+    m_base = backtest_res["metrics_base"]
+    trades_red = backtest_res["n_trades_reduction_pct"]
+    alpha_cum = m_ai["cum_ret"] - m_bh["cum_ret"]
+
+    # ── 3. KPI STATS CARDS (INSTITUTIONAL QUANT STANDARDS) ──
+    col_kpi1, col_kpi2, col_kpi3, col_kpi4 = st.columns(4)
+    c_ret = "#10B981" if m_ai['cum_ret'] >= 0 else "#F43F5E"
+    c_alpha = "#10B981" if alpha_cum >= 0 else "#F43F5E"
+    c_sharpe = "#38BDF8" if m_ai['sharpe'] >= m_bh['sharpe'] else "#94A3B8"
+
+    with col_kpi1:
+        st.markdown(f"""
+        <div class="kpi-mini-card">
+            <div class="kpi-mini-label">Lợi nhuận tích lũy</div>
+            <div class="kpi-mini-value" style="color: {c_ret};">{m_ai['cum_ret']:+.2f}%</div>
+            <div class="kpi-mini-sub">S&P 500 Benchmark: <strong>{m_bh['cum_ret']:+.2f}%</strong></div>
+            <div class="kpi-mini-alpha" style="color: {c_alpha};">Alpha vượt trội: {alpha_cum:+.2f}%</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col_kpi2:
+        st.markdown(f"""
+        <div class="kpi-mini-card">
+            <div class="kpi-mini-label">Hệ số Sharpe (Annualized)</div>
+            <div class="kpi-mini-value" style="color: {c_sharpe};">{m_ai['sharpe']:.2f}</div>
+            <div class="kpi-mini-sub">S&P 500: <strong>{m_bh['sharpe']:.2f}</strong> | Gốc P=0.50: <strong>{m_base['sharpe']:.2f}</strong></div>
+            <div class="kpi-mini-alpha" style="color: #38BDF8;">CAGR mô hình: {m_ai['cagr']:+.2f}%/năm</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col_kpi3:
+        st.markdown(f"""
+        <div class="kpi-mini-card">
+            <div class="kpi-mini-label">Mức sụt giảm tối đa (MDD)</div>
+            <div class="kpi-mini-value" style="color: #F43F5E;">{m_ai['mdd']:.2f}%</div>
+            <div class="kpi-mini-sub">S&P 500 Benchmark: <strong>{m_bh['mdd']:.2f}%</strong></div>
+            <div class="kpi-mini-alpha" style="color: #94A3B8;">Biến động năm: {m_ai['vol']:.2f}%</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col_kpi4:
+        st.markdown(f"""
+        <div class="kpi-mini-card">
+            <div class="kpi-mini-label">Số lệnh thực thi</div>
+            <div class="kpi-mini-value" style="color: #F59E0B;">{m_ai['n_trades']} lệnh</div>
+            <div class="kpi-mini-sub">Chiến lược gốc P=0.50: <strong>{m_base['n_trades']} lệnh</strong></div>
+            <div class="kpi-mini-alpha" style="color: {'#10B981' if trades_red >= 0 else '#F43F5E'};">
+                {f"Giảm {trades_red:.1f}% số lệnh (tiết kiệm phí)" if trades_red >= 0 else f"Tăng {abs(trades_red):.1f}% số lệnh"}
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("<div style='height: 18px;'></div>", unsafe_allow_html=True)
+
+    # ── 4. BIỂU ĐỒ ĐỐI ĐẦU ĐƯỜNG CONG TƯƠNG TÁC (CHARTS) ──
+    st.markdown(f"##### 1. Đối đầu đường cong kiểm định: {model_clean} ({horizon_clean} | P ≥ {selected_threshold:.2f})")
+    ds_exec_label = backtest_res['dataset_label']
+    st.markdown(f"<div style='font-size: 12.5px; color: #94A3B8; margin-top: -4px; margin-bottom: 12px;'><strong style='color: #CBD5E1;'>Tập dữ liệu thực thi:</strong> {ds_exec_label}</div>", unsafe_allow_html=True)
+    st.markdown("<div style='height: 6px;'></div>", unsafe_allow_html=True)
+    
+    if "tăng trưởng" in chart_mode.lower():
+        fig_real = plot_real_equity_curve(backtest_res, model_clean, horizon_clean, selected_threshold)
+    elif "sụt giảm" in chart_mode.lower():
+        fig_real = plot_real_drawdown_curve(backtest_res, model_clean, horizon_clean, selected_threshold)
+    else:
+        fig_real = plot_real_dual_chart(backtest_res, model_clean, horizon_clean, selected_threshold)
+
+    st.plotly_chart(fig_real, use_container_width=True, config={'displayModeBar': False})
+
+    # ── 5. BẢNG CÁC CHỈ SỐ ĐỐI ĐẦU ĐỐI VỚI RIÊNG MÔ HÌNH ĐANG CHỌN ──
+    st.markdown(f"##### 2. Bảng các chỉ số đối đầu tài chính cho mô hình {model_clean} ({horizon_clean})")
+
+    highlight_tag = "TỐI ƯU" if (selected_threshold == 0.42 and horizon_clean == "T+5") else "HIỆN TẠI"
+    df_single_model = pd.DataFrame([
+        {
+            "Chiến lược giao dịch": f"{model_clean} {horizon_clean} ({selected_threshold:.2f} - {highlight_tag})",
+            "Lợi nhuận tích lũy": f"{m_ai['cum_ret']:+.2f}%",
+            "CAGR": f"{m_ai['cagr']:+.2f}%",
+            "Biến động năm": f"{m_ai['vol']:.2f}%",
+            "Hệ số Sharpe": f"{m_ai['sharpe']:.2f}",
+            "Max Drawdown": f"{m_ai['mdd']:.2f}%",
+            "Tỷ lệ thắng": f"{m_ai['win_rate']:.2f}%",
+            "Số lệnh": f"{m_ai['n_trades']} lệnh"
+        },
+        {
+            "Chiến lược giao dịch": f"{model_clean} {horizon_clean} (Gốc P ≥ 0.50)",
+            "Lợi nhuận tích lũy": f"{m_base['cum_ret']:+.2f}%",
+            "CAGR": f"{m_base['cagr']:+.2f}%",
+            "Biến động năm": f"{m_base['vol']:.2f}%",
+            "Hệ số Sharpe": f"{m_base['sharpe']:.2f}",
+            "Max Drawdown": f"{m_base['mdd']:.2f}%",
+            "Tỷ lệ thắng": f"{m_base['win_rate']:.2f}%",
+            "Số lệnh": f"{m_base['n_trades']} lệnh"
+        },
+        {
+            "Chiến lược giao dịch": "Mua & Nắm giữ S&P 500 (Benchmark)",
+            "Lợi nhuận tích lũy": f"{m_bh['cum_ret']:+.2f}%",
+            "CAGR": f"{m_bh['cagr']:+.2f}%",
+            "Biến động năm": f"{m_bh['vol']:.2f}%",
+            "Hệ số Sharpe": f"{m_bh['sharpe']:.2f}",
+            "Max Drawdown": f"{m_bh['mdd']:.2f}%",
+            "Tỷ lệ thắng": f"{m_bh['win_rate']:.2f}%",
+            "Số lệnh": "1 lệnh (Nắm giữ)"
+        }
     ])
-    render_glass_table(df_b5, highlight_keyword="TỐI ƯU")
+    render_glass_table(df_single_model, highlight_keyword=highlight_tag)
 
-    col_ablation, col_feat = st.columns([0.48, 0.52])
-
-    with col_ablation:
-        st.markdown("##### 3. Thực nghiệm bóc tách đặc trưng (Bảng 3)")
-        df_b3 = pd.DataFrame([
-            {"Kịch bản": "Chỉ kỹ thuật (11)", "Mô hình": "Random Forest", "Acc": "55.07%", "F1": "0.459", "ROC-AUC": "0.469"},
-            {"Kịch bản": "Chỉ kỹ thuật (11)", "Mô hình": "XGBoost", "Acc": "54.38%", "F1": "0.454", "ROC-AUC": "0.480"},
-            {"Kịch bản": "Chỉ cảm xúc (11)", "Mô hình": "XGBoost", "Acc": "55.07%", "F1": "0.483", "ROC-AUC": "0.449"},
-            {"Kịch bản": "Chỉ cảm xúc (11)", "Mô hình": "Random Forest", "Acc": "51.84%", "F1": "0.485", "ROC-AUC": "0.472"},
-            {"Kịch bản": "Mô hình lai (22)", "Mô hình": "XGBoost", "Acc": "53.00%", "F1": "0.458", "ROC-AUC": "0.452"},
-            {"Kịch bản": "Mô hình lai (22)", "Mô hình": "Random Forest", "Acc": "51.84%", "F1": "0.470", "ROC-AUC": "0.463"}
-        ])
-        render_glass_table(df_b3, highlight_keyword="Mô hình lai")
+    # ── 6. TOP ĐẶC TRƯNG QUAN TRỌNG VÀ BÓC TÁCH ĐỘ NHẠY ──
+    col_feat, col_sens = st.columns([0.52, 0.48])
 
     with col_feat:
-        st.markdown("##### 4. Tầm quan trọng đặc trưng đồng thuận (Bảng 4)")
-        fig_feat = plot_feature_importance_consensus()
-        st.plotly_chart(fig_feat, use_container_width=True, config={'displayModeBar': False})
+        st.markdown(f"##### 3. Top đặc trưng quan trọng qua {model_clean} ({horizon_clean})")
+        fig_feat_model = plot_feature_importance_for_model(backtest_res["df_feats"], model_clean, horizon_clean)
+        st.plotly_chart(fig_feat_model, use_container_width=True, config={'displayModeBar': False})
+        
+        st.markdown("""
+        <div style="font-size: 11.5px; color: #8E9CAE; line-height: 1.6; margin-top: -6px;">
+            • <span style="color: #D97706; font-weight: 700;">■ Vàng ánh kim:</span> Đặc trưng đóng góp lớn nhất (Top 1 Model)<br>
+            • <span style="color: #2563EB; font-weight: 700;">■ Xanh thép:</span> Chỉ báo kỹ thuật định lượng (Technical: Momentum / Trend / Volatility)<br>
+            • <span style="color: #059669; font-weight: 700;">■ Xanh ngọc lục bảo:</span> Cảm xúc FinBERT & Xung lượng tâm lý vĩ mô
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col_sens:
+        st.markdown(f"##### 4. Thử nghiệm độ nhạy ngưỡng P trên {model_clean} ({horizon_clean})")
+        th_list = [0.42, 0.45, 0.48, 0.50, 0.52]
+        sens_rows = []
+        for th_val in th_list:
+            th_res = run_out_of_sample_backtest(
+                model_name=model_clean,
+                horizon=horizon_clean,
+                threshold=th_val,
+                fee_rate=cfg.TRADING_FEE,
+                dataset_source=dataset_code
+            )
+            m_th = th_res["metrics_ai"]
+            is_cur = abs(th_val - selected_threshold) < 0.005
+            is_opt = (th_val == 0.42 and horizon_clean == "T+5")
+            label_th = f"{th_val:.2f} (ĐANG CHỌN)" if is_cur else (f"{th_val:.2f} (TỐI ƯU)" if is_opt else f"{th_val:.2f}")
+            sens_rows.append({
+                "Ngưỡng P": label_th,
+                "Số lệnh": f"{m_th['n_trades']} lệnh",
+                "Lợi nhuận": f"{m_th['cum_ret']:+.2f}%",
+                "Sharpe": f"{m_th['sharpe']:.2f}",
+                "Max DD": f"{m_th['mdd']:.2f}%"
+            })
+        df_sens = pd.DataFrame(sens_rows)
+        render_glass_table(df_sens, highlight_keyword="ĐANG CHỌN" if any("ĐANG CHỌN" in r["Ngưỡng P"] for r in sens_rows) else "TỐI ƯU")
+        
+        st.markdown(f"""
+        <div style="font-size: 11.5px; color: #8E9CAE; line-height: 1.5; margin-top: 8px;">
+            <strong style="color: #00E599;">Cơ chế triệt tiêu Whipsaw:</strong> Khi hạ ngưỡng thoát vị thế xuống 0.42 trên khung 5 ngày, mô hình tránh được các đợt cắt lỗ non trong sóng điều chỉnh ngắn hạn, giảm mạnh chi phí ma sát và tăng hệ số Sharpe thực tế.
+        </div>
+        """, unsafe_allow_html=True)
 
     st.markdown("---")
-    st.markdown("##### 5. Tối ưu hóa ngưỡng tự tin trên khung 5 ngày (Bảng 7)")
-    df_b7 = pd.DataFrame([
-        {"Ngưỡng xác suất P": "0.42 (TỐI ƯU)", "Số lệnh giao dịch": "15 lệnh", "Lợi nhuận tích lũy": "51.91%", "Hệ số Sharpe": "1.60", "Max Drawdown": "-15.54%"},
-        {"Ngưỡng xác suất P": "0.45", "Số lệnh giao dịch": "25 lệnh", "Lợi nhuận tích lũy": "46.46%", "Hệ số Sharpe": "1.48", "Max Drawdown": "-15.54%"},
-        {"Ngưỡng xác suất P": "0.48", "Số lệnh giao dịch": "41 lệnh", "Lợi nhuận tích lũy": "45.08%", "Hệ số Sharpe": "1.47", "Max Drawdown": "-15.54%"},
-        {"Ngưỡng xác suất P": "0.50 (Gốc)", "Số lệnh giao dịch": "53 lệnh", "Lợi nhuận tích lũy": "39.99%", "Hệ số Sharpe": "1.36", "Max Drawdown": "-15.54%"},
-        {"Ngưỡng xác suất P": "0.52", "Số lệnh giao dịch": "67 lệnh", "Lợi nhuận tích lũy": "37.20%", "Hệ số Sharpe": "1.33", "Max Drawdown": "-15.54%"}
-    ])
-    render_glass_table(df_b7, highlight_keyword="TỐI ƯU")
-    st.markdown(
-        "**Kết luận định lượng:** Khi hạ ngưỡng thoát vị thế xuống **0.42**, số lệnh giao dịch giảm **71.7%** (từ 53 xuống 15 lệnh). "
-        "Việc loại bỏ hiện tượng đảo vị thế liên tục (Whipsaw) triệt tiêu phần lớn chi phí ma sát (Turnover Drag), "
-        "giúp chiến lược chính thức vượt qua Buy & Hold S&P 500 cả về lợi nhuận (51.91% vs 51.63%) và Sharpe (1.60 vs 1.59)."
-    )
+
+    # ── 7. EXPANDABLE DỮ LIỆU ĐỐI CHIẾU BÁO CÁO NGHIÊN CỨU GỐC (BẢNG 3, BẢNG 5, BẢNG 7) ──
+    with st.expander("  📚 Dữ liệu đối chiếu báo cáo nghiên cứu gốc Nhóm 9 (Bảng 3, Bảng 5, Bảng 7)", expanded=False):
+        st.markdown("###### Hiệu năng các chiến lược trên tập kiểm thử ngoài mẫu (Báo cáo Bảng 5)")
+        df_b5 = pd.DataFrame([
+            {"Chiến lược giao dịch": "Mua & Nắm giữ S&P 500 (Benchmark)", "Lợi nhuận tích lũy": "51.63%", "CAGR": "27.34%", "Biến động năm": "16.02%", "Hệ số Sharpe": "1.59", "Max Drawdown": "-15.54%", "Tỷ lệ thắng": "58.53%"},
+            {"Chiến lược giao dịch": "Hồi quy Logistic 1D (0.50)", "Lợi nhuận tích lũy": "14.03%", "CAGR": "7.92%", "Biến động năm": "14.04%", "Hệ số Sharpe": "0.61", "Max Drawdown": "-14.26%", "Tỷ lệ thắng": "56.23%"},
+            {"Chiến lược giao dịch": "Rừng ngẫu nhiên 1D (0.50)", "Lợi nhuận tích lũy": "24.49%", "CAGR": "13.57%", "Biến động năm": "14.66%", "Hệ số Sharpe": "0.94", "Max Drawdown": "-15.54%", "Tỷ lệ thắng": "57.23%"},
+            {"Chiến lược giao dịch": "LightGBM 1D (0.50)", "Lợi nhuận tích lũy": "17.64%", "CAGR": "9.89%", "Biến động năm": "14.59%", "Hệ số Sharpe": "0.72", "Max Drawdown": "-15.64%", "Tỷ lệ thắng": "55.84%"},
+            {"Chiến lược giao dịch": "XGBoost 1D (0.50)", "Lợi nhuận tích lũy": "29.93%", "CAGR": "16.42%", "Biến động năm": "14.94%", "Hệ số Sharpe": "1.09", "Max Drawdown": "-14.98%", "Tỷ lệ thắng": "57.40%"},
+            {"Chiến lược giao dịch": "Rừng ngẫu nhiên 5D TỐI ƯU (P ≥ 0.42)", "Lợi nhuận tích lũy": "51.91%", "CAGR": "27.48%", "Biến động năm": "14.85%", "Hệ số Sharpe": "1.60", "Max Drawdown": "-15.54%", "Tỷ lệ thắng": "60.00%"}
+        ])
+        render_glass_table(df_b5, highlight_keyword="TỐI ƯU")
+
+        col_b3, col_b7 = st.columns(2)
+        with col_b3:
+            st.markdown("###### Thực nghiệm bóc tách đặc trưng (Bảng 3)")
+            df_b3 = pd.DataFrame([
+                {"Kịch bản": "Chỉ kỹ thuật (11)", "Mô hình": "Random Forest", "Acc": "55.07%", "F1": "0.459", "ROC-AUC": "0.469"},
+                {"Kịch bản": "Chỉ kỹ thuật (11)", "Mô hình": "XGBoost", "Acc": "54.38%", "F1": "0.454", "ROC-AUC": "0.480"},
+                {"Kịch bản": "Chỉ cảm xúc (11)", "Mô hình": "XGBoost", "Acc": "55.07%", "F1": "0.483", "ROC-AUC": "0.449"},
+                {"Kịch bản": "Chỉ cảm xúc (11)", "Mô hình": "Random Forest", "Acc": "51.84%", "F1": "0.485", "ROC-AUC": "0.472"},
+                {"Kịch bản": "Mô hình lai (22)", "Mô hình": "XGBoost", "Acc": "53.00%", "F1": "0.458", "ROC-AUC": "0.452"},
+                {"Kịch bản": "Mô hình lai (22)", "Mô hình": "Random Forest", "Acc": "51.84%", "F1": "0.470", "ROC-AUC": "0.463"}
+            ])
+            render_glass_table(df_b3, highlight_keyword="Mô hình lai")
+
+        with col_b7:
+            st.markdown("###### Tối ưu hóa ngưỡng tự tin trên khung 5 ngày (Bảng 7)")
+            df_b7 = pd.DataFrame([
+                {"Ngưỡng xác suất P": "0.42 (TỐI ƯU)", "Số lệnh giao dịch": "15 lệnh", "Lợi nhuận tích lũy": "51.91%", "Hệ số Sharpe": "1.60", "Max Drawdown": "-15.54%"},
+                {"Ngưỡng xác suất P": "0.45", "Số lệnh giao dịch": "25 lệnh", "Lợi nhuận tích lũy": "46.46%", "Hệ số Sharpe": "1.48", "Max Drawdown": "-15.54%"},
+                {"Ngưỡng xác suất P": "0.48", "Số lệnh giao dịch": "41 lệnh", "Lợi nhuận tích lũy": "45.08%", "Hệ số Sharpe": "1.47", "Max Drawdown": "-15.54%"},
+                {"Ngưỡng xác suất P": "0.50 (Gốc)", "Số lệnh giao dịch": "53 lệnh", "Lợi nhuận tích lũy": "39.99%", "Hệ số Sharpe": "1.36", "Max Drawdown": "-15.54%"},
+                {"Ngưỡng xác suất P": "0.52", "Số lệnh giao dịch": "67 lệnh", "Lợi nhuận tích lũy": "37.20%", "Hệ số Sharpe": "1.33", "Max Drawdown": "-15.54%"}
+            ])
+            render_glass_table(df_b7, highlight_keyword="TỐI ƯU")
 
 # =============================================================================
 # PHÂN HỆ 4: KỊCH BẢN GIẢ ĐỊNH VÀ THỬ NGHIỆM CÚ SỐC VĨ MÔ
@@ -521,7 +804,7 @@ with st.container(key="quant_section_4"):
         badge_icon=get_section_icon_svg("icon_sec4_shock.svg"),
         badge_glow_color="rgba(245, 158, 11, 0.45)",
         headline="Phân hệ 4: Kịch bản giả định và thử nghiệm cú sốc vĩ mô",
-        subtitle="Mô phỏng phản ứng nhạy cảm của xác suất thị trường trước các cú sốc tin tức bất ngờ và giải trình 3 kênh truyền dẫn AI.",
+        subtitle="Mô phỏng phản ứng nhạy cảm của xác suất thị trường trước các cú sốc tin tức bất ngờ qua 3 kênh truyền dẫn AI.",
         spine_class="spine-to-sec4"
     )
 

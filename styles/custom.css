@@ -3,7 +3,7 @@
    Standard: Vercel / Linear / Bloomberg Web Terminal
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700;800&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap');
 
 /* --- Root & Canvas Background --- */
 :root {
@@ -34,9 +34,60 @@ body[data-active-section="section-4"] {
     --ambient-b: 11;
 }
 
-html, body, [class*="css"] {
+:root {
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+}
+
+/* --- Global Typography System --- */
+html, body, .stApp {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     color: #F0F4F8;
+}
+
+.stMarkdown, p, label, input, textarea, select {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: #F0F4F8;
+}
+
+h1, h2, h3, h4, h5, h6, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown h4, .stMarkdown h5, .stMarkdown h6 {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    letter-spacing: -0.2px;
+}
+
+/* Bảo vệ tuyệt đối Material Symbols & Icons của Streamlit chống bị ghi đè font thành chữ thô */
+[data-testid="stIconMaterial"],
+[data-testid="stExpanderToggleIcon"],
+[class*="material-symbols"],
+[class*="material-icons"],
+.material-symbols-rounded,
+.material-symbols-outlined,
+.material-icons,
+span[data-testid="stIconMaterial"] {
+    font-family: 'Material Symbols Rounded', 'Material Symbols Outlined', 'Material Icons', sans-serif !important;
+    font-weight: normal !important;
+    font-style: normal !important;
+    font-size: 20px !important;
+    line-height: 1 !important;
+    letter-spacing: normal !important;
+    text-transform: none !important;
+    display: inline-block !important;
+    white-space: nowrap !important;
+    word-wrap: normal !important;
+    direction: ltr !important;
+    -webkit-font-feature-settings: 'liga' !important;
+    -webkit-font-smoothing: antialiased !important;
+    overflow: hidden !important;
+    width: 20px !important;
+    height: 20px !important;
+    min-width: 20px !important;
+    max-width: 20px !important;
+    vertical-align: middle !important;
+}
+
+/* Bảo toàn font Monospace cho số liệu, code, KPIs, bảng điểm */
+code, pre, .mono, .font-mono, [class*="mono"], [style*="JetBrains Mono"], .metric-value, .metric-delta {
+    font-family: 'JetBrains Mono', monospace !important;
 }
 
 .stApp {
@@ -557,8 +608,8 @@ div[class*="st-key-quant_section_"] .github-spine-wrapper {
 /* Tiêu đề phân hệ xuất hiện trễ so le */
 .github-section-header {
     text-align: center;
-    max-width: 720px;
-    margin: 0 auto 35px auto;
+    max-width: 920px;
+    margin: 0 auto 32px auto;
     opacity: 0;
     transform: translateY(35px);
     filter: blur(6px);
@@ -574,20 +625,23 @@ div[class*="st-key-quant_section_"] .github-spine-wrapper {
 }
 
 .github-section-headline {
-    font-size: 28px;
+    font-size: 27px;
     font-weight: 800;
-    letter-spacing: -0.5px;
+    letter-spacing: -0.4px;
     background: linear-gradient(180deg, #FFFFFF 30%, #94A3B8 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     margin: 10px 0 8px 0;
+    text-wrap: balance;
 }
 
 .github-section-sub {
     font-size: 14.5px;
     color: #94A3B8;
     line-height: 1.6;
-    margin: 0;
+    max-width: 860px;
+    margin: 0 auto;
+    text-wrap: balance;
 }
 
 /* Card chứa nội dung phân hệ trượt vào sau cùng */
@@ -806,6 +860,30 @@ div[data-testid="stExpander"] summary {
     color: #F0F4F8 !important;
     font-weight: 600 !important;
     font-size: 13.5px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    cursor: pointer !important;
+}
+
+div[data-testid="stExpander"] summary [data-testid="stExpanderToggleIcon"],
+div[data-testid="stExpander"] summary [data-testid="stIconMaterial"],
+div[data-testid="stExpander"] summary svg {
+    flex-shrink: 0 !important;
+    width: 20px !important;
+    min-width: 20px !important;
+    height: 20px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-right: 6px !important;
+    overflow: hidden !important;
+}
+
+div[data-testid="stExpander"] summary p {
+    margin: 0 !important;
+    padding: 0 !important;
+    display: inline-block !important;
 }
 
 div[data-testid="stExpander"] summary:hover {
@@ -956,17 +1034,37 @@ html {
 .hero-attribution {
     font-size: 13.5px;
     color: #94A3B8;
-    max-width: 820px;
+    max-width: 1020px;
+    width: fit-content;
     line-height: 1.6;
     margin: 0 auto 36px auto;
     background: rgba(15, 23, 42, 0.65);
     border: 1px solid rgba(255, 255, 255, 0.09);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
-    padding: 10px 24px;
+    padding: 10px 28px;
     border-radius: 9999px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
     animation: heroFadeUp 1.4s cubic-bezier(0.16, 1, 0.3, 1) 0.55s backwards;
+    text-align: center;
+    text-wrap: balance;
+}
+
+.hero-attr-group, .hero-attr-prof {
+    display: inline-block;
+}
+
+@media (max-width: 980px) {
+    .hero-attribution {
+        border-radius: 16px;
+        padding: 12px 20px;
+    }
+    .hero-attr-sep {
+        display: none;
+    }
+    .hero-attr-group, .hero-attr-prof {
+        display: block;
+    }
 }
 
 .hero-scroll-cue {
@@ -1114,4 +1212,111 @@ div[data-testid="stVerticalBlockBorderWrapper"],
     .mps-3d-stage {
         display: none !important;
     }
+}
+
+/* ── KPI Mini Stat Cards (Section 3 - Institutional FinTech Standard) ── */
+.kpi-mini-card {
+    background: rgba(15, 23, 42, 0.70) !important;
+    backdrop-filter: blur(14px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 12px !important;
+    padding: 16px 18px !important;
+    transition: all 0.25s ease !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25) !important;
+}
+
+.kpi-mini-card:hover {
+    border-color: rgba(255, 255, 255, 0.20) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35) !important;
+}
+
+.kpi-mini-label {
+    font-size: 11.5px !important;
+    font-weight: 600 !important;
+    color: #94A3B8 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.6px !important;
+    margin-bottom: 8px !important;
+    font-family: 'Inter', -apple-system, sans-serif !important;
+}
+
+.kpi-mini-value {
+    font-size: 26px !important;
+    font-weight: 700 !important;
+    line-height: 1.15 !important;
+    margin-bottom: 8px !important;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    font-variant-numeric: tabular-nums !important;
+    letter-spacing: -0.02em !important;
+}
+
+.kpi-mini-sub {
+    font-size: 11.5px !important;
+    color: #64748B !important;
+    margin-bottom: 6px !important;
+    font-family: 'Inter', sans-serif !important;
+    line-height: 1.4 !important;
+}
+
+.kpi-mini-sub strong {
+    color: #94A3B8 !important;
+    font-weight: 600 !important;
+}
+
+.kpi-mini-alpha {
+    font-size: 11.5px !important;
+    font-weight: 600 !important;
+    font-family: 'Inter', sans-serif !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    line-height: 1.4 !important;
+}
+
+/* Triệt tiêu triệt để scrollbar và tối ưu khoảng đệm cho Plotly Charts */
+div[data-testid="stPlotlyChart"] {
+    overflow: hidden !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
+div[data-testid="stPlotlyChart"]::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+div[data-testid="stPlotlyChart"] > div,
+div[data-testid="stPlotlyChart"] .svg-container,
+div[data-testid="stPlotlyChart"] .main-svg {
+    overflow: hidden !important;
+}
+
+/* Khung cuộn tin tức mượt mà, đồng đều chiều cao Phân hệ 2 */
+.news-feed-container {
+    max-height: 520px;
+    overflow-y: auto;
+    padding-right: 6px;
+    margin-bottom: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(56, 189, 248, 0.3) rgba(255, 255, 255, 0.03);
+}
+
+.news-feed-container::-webkit-scrollbar {
+    width: 5px;
+}
+
+.news-feed-container::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 4px;
+}
+
+.news-feed-container::-webkit-scrollbar-thumb {
+    background: rgba(56, 189, 248, 0.3);
+    border-radius: 4px;
+}
+
+.news-feed-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(56, 189, 248, 0.5);
 }

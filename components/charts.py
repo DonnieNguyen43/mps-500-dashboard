@@ -20,10 +20,10 @@ def get_dark_plotly_layout(height: int = 500, title: str = "") -> dict:
     """
     return dict(
         height=height,
-        title=dict(text=title, font=dict(color="#F0F4F8", size=14, family="Inter, sans-serif")),
+        title=dict(text=title, font=dict(color="#F0F4F8", size=14, family="'Inter', sans-serif")),
         plot_bgcolor="rgba(0,0,0,0)",
         paper_bgcolor="rgba(0,0,0,0)",
-        font=dict(color=cfg.COLOR_TEXT_PRIMARY, family="Inter, sans-serif", size=12),
+        font=dict(color=cfg.COLOR_TEXT_PRIMARY, family="'Inter', sans-serif", size=12),
         margin=dict(l=40, r=30, t=50, b=35),
         legend=dict(
             orientation="h",
@@ -147,49 +147,65 @@ def plot_sp500_candlestick_macd(df: pd.DataFrame) -> go.Figure:
 
 def plot_confidence_gauge(prob_5d: float, threshold: float = cfg.THRESHOLD_OPTIMAL) -> go.Figure:
     """
-    Vẽ đồ thị Gauge đo lường mức độ tự tin xác suất khung 5 ngày so với mốc 0.42.
+    Biểu đồ Gauge đo lường mức độ tự tin xác suất khung 5 ngày so với ngưỡng tối ưu 0.42.
+    Được căn giữa đối xứng tâm hoàn hảo, khoảng đệm tiêu đề thoáng đãng, màu sắc chuẩn FinTech thể chế.
     """
     val_pct = prob_5d * 100
     thresh_pct = threshold * 100
 
-    bar_color = cfg.COLOR_BULLISH if prob_5d >= threshold else cfg.COLOR_BEARISH
+    bar_color = "#10B981" if prob_5d >= threshold else "#F43F5E"
 
     fig = go.Figure(go.Indicator(
         mode="gauge+number+delta",
         value=val_pct,
-        domain={'x': [0.08, 0.88], 'y': [0.02, 0.80]},
-        delta={'reference': thresh_pct, 'increasing': {'color': cfg.COLOR_BULLISH}, 'decreasing': {'color': cfg.COLOR_BEARISH}},
-        number={'suffix': "%", 'font': {'size': 34, 'color': '#F0F4F8', 'family': 'JetBrains Mono'}},
+        domain={'x': [0.00, 1.00], 'y': [0.00, 0.68]},
+        delta={
+            'reference': thresh_pct,
+            'increasing': {'color': "#10B981"},
+            'decreasing': {'color': "#F43F5E"},
+            'font': {'size': 13, 'family': "'Inter', -apple-system, sans-serif"}
+        },
+        number={
+            'suffix': "%",
+            'font': {'size': 32, 'color': '#F8FAFC', 'family': "'Inter', -apple-system, sans-serif"}
+        },
         gauge={
-            'axis': {'range': [0, 100], 'tickwidth': 1, 'tickcolor': '#8E9CAE'},
-            'bar': {'color': bar_color, 'thickness': 0.28},
-            'bgcolor': "rgba(0,0,0,0.3)",
+            'axis': {
+                'range': [0, 100],
+                'tickwidth': 1,
+                'tickcolor': '#64748B',
+                'tickvals': [0, 20, 40, 60, 80, 100],
+                'ticktext': ['0', '20', '40', '60', '80', '100'],
+                'tickfont': {'family': "'Inter', sans-serif", 'size': 11, 'color': '#94A3B8'}
+            },
+            'bar': {'color': bar_color, 'thickness': 0.26},
+            'bgcolor': "rgba(0,0,0,0.25)",
             'borderwidth': 1,
             'bordercolor': "rgba(255, 255, 255, 0.08)",
             'steps': [
-                {'range': [0, thresh_pct], 'color': 'rgba(255, 77, 79, 0.18)'},
-                {'range': [thresh_pct, 100], 'color': 'rgba(0, 229, 153, 0.18)'}
+                {'range': [0, thresh_pct], 'color': 'rgba(244, 63, 94, 0.16)'},
+                {'range': [thresh_pct, 100], 'color': 'rgba(16, 185, 129, 0.16)'}
             ],
             'threshold': {
-                'line': {'color': "#F0F4F8", 'width': 3},
-                'thickness': 0.8,
+                'line': {'color': "#FFFFFF", 'width': 3},
+                'thickness': 0.78,
                 'value': thresh_pct
             }
         }
     ))
 
     fig.update_layout(
-        height=320,
-        margin=dict(l=25, r=42, t=55, b=15),
+        height=300,
+        margin=dict(l=25, r=25, t=80, b=15),
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(color=cfg.COLOR_TEXT_PRIMARY, family="Inter"),
+        font=dict(color="#CBD5E1", family="'Inter', -apple-system, sans-serif"),
         title=dict(
-            text="<b>ĐỒ THỊ ĐO LƯỜNG NGƯỠNG TỰ TIN (T+5)</b><br><span style='font-size:11px;color:#8E9CAE;'>Vùng xanh: Mua/Nắm giữ an toàn (≥ 42.0%) | Vùng đỏ: Cảnh báo hạ tỷ trọng</span>",
-            font=dict(size=12, color="#F0F4F8", family="Inter"),
+            text="<b>ĐO LƯỜNG NGƯỠNG TỰ TIN (T+5)</b><br><span style='font-size:11px;color:#94A3B8;'>Vùng an toàn ≥ 42.0% | Vùng cảnh báo rủi ro &lt; 42.0%</span>",
+            font=dict(size=12.5, color="#F8FAFC", family="'Inter', -apple-system, sans-serif"),
             x=0.5,
             xanchor="center",
-            y=0.96,
+            y=0.90,
             yanchor="top"
         )
     )
@@ -223,21 +239,18 @@ def plot_sentiment_donut_chart(sent_dict: dict, title: str = "Cơ cấu cảm x�
         domain=dict(x=[0.05, 0.95], y=[0.08, 0.92]),
         marker=dict(colors=colors, line=dict(color="#0b0e14", width=2)),
         textinfo="label+percent",
-        textfont=dict(size=12, color="#F0F4F8", family="Inter, sans-serif"),
+        textfont=dict(size=12, color="#F0F4F8", family="'Inter', sans-serif"),
         hoverinfo="label+value+percent"
     ))
 
     fig.update_layout(
-        height=330,
-        margin=dict(l=25, r=25, t=42, b=42),
+        height=270,
+        margin=dict(l=15, r=15, t=15, b=15),
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
         showlegend=False,
         title=dict(
-            text=title,
-            font=dict(color="#F0F4F8", size=13, family="Inter, sans-serif"),
-            x=0.5,
-            xanchor="center"
+            text=None
         )
     )
     return fig
@@ -291,70 +304,303 @@ def plot_feature_importance_consensus() -> go.Figure:
     fig.update_layout(layout)
     return fig
 
-def plot_equity_curves() -> go.Figure:
+def plot_real_equity_curve(backtest_res: dict, model_name: str, horizon: str, threshold: float) -> go.Figure:
     """
-    Vẽ đồ thị so sánh đường cong tăng trưởng vốn ngoài mẫu:
-    - Buy & Hold S&P 500 (51.63%, Sharpe 1.59)
-    - Hybrid Gốc 0.50 (39.99%, Sharpe 1.36)
-    - Hybrid Tối Ưu P >= 0.42 (51.91%, Sharpe 1.60)
+    Vẽ biểu đồ đường cong tăng trưởng vốn thực nghiệm (Real Equity Curve):
+    So sánh Lợi nhuận tích lũy thực tế giữa:
+    - Mô hình AI được chọn (P >= threshold)
+    - Điểm chuẩn Buy & Hold S&P 500
+    - Mô hình AI cấu hình gốc (P >= 0.50)
+    100% tính toán thực nghiệm trên 434 phiên ngoài mẫu (không dùng hạt giống mẫu).
     """
-    n_days = 434
-    dates = pd.date_range(start="2023-12-15", periods=n_days, freq="B")
-
-    t = np.linspace(0, 1, n_days)
-    base_trend = 0.5163 * t
-    volatility = np.sin(t * 12) * 0.04 + np.random.normal(0, 0.008, n_days).cumsum()
-    volatility = volatility - volatility[0]
-
-    bh_equity = 1.0 + base_trend + volatility * 0.6
-    bh_equity = bh_equity / bh_equity[0] * 1.5163 / bh_equity[-1]
-
-    drag = np.linspace(0, -0.1164, n_days)
-    base_050 = 1.0 + 0.3999 * t + volatility * 0.5 + drag * 0.5
-    base_050 = base_050 / base_050[0] * 1.3999 / base_050[-1]
-
-    opt_042 = 1.0 + 0.5191 * t + volatility * 0.52
-    opt_042 = opt_042 / opt_042[0] * 1.5191 / opt_042[-1]
+    dates = backtest_res["dates"]
+    ai_cum = backtest_res["equity_ai"]
+    bh_cum = backtest_res["equity_bh"]
+    base_cum = backtest_res["equity_base"]
+    m_ai = backtest_res["metrics_ai"]
+    m_bh = backtest_res["metrics_bh"]
+    m_base = backtest_res["metrics_base"]
 
     fig = go.Figure()
 
+    # 1. Chiến lược AI được chọn
     fig.add_trace(go.Scatter(
-        x=dates, y=(opt_042 - 1.0) * 100,
+        x=dates, y=ai_cum,
         mode="lines",
-        name="Hybrid tối ưu P ≥ 0.42 (51.91% | Sharpe 1.60)",
-        line=dict(color=cfg.COLOR_BULLISH, width=3.2)
+        name=f"{model_name} {horizon} (P ≥ {threshold:.2f}) [{m_ai['cum_ret']:+.2f}% | Sharpe {m_ai['sharpe']:.2f}]",
+        line=dict(color=cfg.COLOR_BULLISH, width=3.2),
+        fill="tozeroy",
+        fillcolor="rgba(0, 229, 153, 0.05)",
+        hovertemplate="<b>%{x|%d/%m/%Y}</b><br>AI Lợi nhuận: <b>%{y:+.2f}%</b><extra></extra>"
     ))
 
+    # 2. Điểm chuẩn Mua & Nắm giữ S&P 500 (Benchmark)
     fig.add_trace(go.Scatter(
-        x=dates, y=(bh_equity - 1.0) * 100,
+        x=dates, y=bh_cum,
         mode="lines",
-        name="Buy & Hold S&P 500 (51.63% | Sharpe 1.59)",
-        line=dict(color="#A0AEC0", width=2.0, dash="dash")
+        name=f"Buy & Hold S&P 500 [{m_bh['cum_ret']:+.2f}% | Sharpe {m_bh['sharpe']:.2f}]",
+        line=dict(color="#A0AEC0", width=2.0, dash="dash"),
+        hovertemplate="<b>%{x|%d/%m/%Y}</b><br>Benchmark S&P 500: <b>%{y:+.2f}%</b><extra></extra>"
     ))
 
+    # 3. Mô hình cấu hình gốc P >= 0.50 (Baseline)
     fig.add_trace(go.Scatter(
-        x=dates, y=(base_050 - 1.0) * 100,
+        x=dates, y=base_cum,
         mode="lines",
-        name="Hybrid gốc 0.50 (39.99% | Sharpe 1.36)",
-        line=dict(color=cfg.COLOR_BEARISH, width=1.6, dash="dot")
+        name=f"Chiến lược gốc P = 0.50 [{m_base['cum_ret']:+.2f}% | Sharpe {m_base['sharpe']:.2f}]",
+        line=dict(color=cfg.COLOR_BEARISH, width=1.8, dash="dot"),
+        hovertemplate="<b>%{x|%d/%m/%Y}</b><br>Gốc P=0.50: <b>%{y:+.2f}%</b><extra></extra>"
     ))
 
-    layout = get_dark_plotly_layout(height=450, title="")
+    layout = get_dark_plotly_layout(height=480, title="")
     layout["title"] = None
     layout["legend"] = dict(
         orientation="h",
         yanchor="bottom",
-        y=1.03,
+        y=1.07,
         xanchor="center",
         x=0.5,
         bgcolor="rgba(0,0,0,0)",
         font=dict(size=11.5, color="#C2CBD6")
     )
-    layout["margin"] = dict(l=65, r=25, t=35, b=45)
+    layout["margin"] = dict(l=65, r=25, t=75, b=45)
     layout["yaxis"]["title"] = "Lợi nhuận tích lũy (%)"
-    layout["xaxis"]["title"] = "Thời gian kiểm thử ngoài mẫu (15/12/2023 - 07/04/2026)"
+    layout["yaxis"]["ticksuffix"] = "%"
+    layout["xaxis"]["title"] = backtest_res.get("dataset_label", f"Thời gian ({len(dates)} phiên)")
     fig.update_layout(layout)
     return fig
+
+def plot_real_drawdown_curve(backtest_res: dict, model_name: str, horizon: str, threshold: float) -> go.Figure:
+    """
+    Vẽ biểu đồ đường cong sụt giảm vốn tối đa (Underwater Drawdown Curve):
+    Trực quan hóa mức độ bảo toàn vốn và quản trị rủi ro khi thị trường thoái lui.
+    """
+    dates = backtest_res["dates"]
+    ai_dd = backtest_res["drawdown_ai"]
+    bh_dd = backtest_res["drawdown_bh"]
+    base_dd = backtest_res["drawdown_base"]
+    m_ai = backtest_res["metrics_ai"]
+    m_bh = backtest_res["metrics_bh"]
+
+    fig = go.Figure()
+
+    # 1. Drawdown Chiến lược AI được chọn
+    fig.add_trace(go.Scatter(
+        x=dates, y=ai_dd,
+        mode="lines",
+        name=f"AI: {model_name} ({horizon}) [Max DD: {m_ai['mdd']:.2f}%]",
+        line=dict(color=cfg.COLOR_BULLISH, width=2.4),
+        fill="tozeroy",
+        fillcolor="rgba(0, 229, 153, 0.18)",
+        hovertemplate="<b>%{x|%d/%m/%Y}</b><br>AI Sụt giảm: <b>%{y:.2f}%</b><extra></extra>"
+    ))
+
+    # 2. Drawdown Buy & Hold S&P 500
+    fig.add_trace(go.Scatter(
+        x=dates, y=bh_dd,
+        mode="lines",
+        name=f"S&P 500 Benchmark [Max DD: {m_bh['mdd']:.2f}%]",
+        line=dict(color=cfg.COLOR_BEARISH, width=2.0, dash="dash"),
+        fill="tozeroy",
+        fillcolor="rgba(255, 77, 79, 0.10)",
+        hovertemplate="<b>%{x|%d/%m/%Y}</b><br>Benchmark Sụt giảm: <b>%{y:.2f}%</b><extra></extra>"
+    ))
+
+    # 3. Drawdown Gốc P = 0.50
+    fig.add_trace(go.Scatter(
+        x=dates, y=base_dd,
+        mode="lines",
+        name=f"Mức gốc P = 0.50 [Max DD: {backtest_res['metrics_base']['mdd']:.2f}%]",
+        line=dict(color=cfg.COLOR_NEUTRAL, width=1.5, dash="dot"),
+        hovertemplate="<b>%{x|%d/%m/%Y}</b><br>Gốc P=0.50 Sụt giảm: <b>%{y:.2f}%</b><extra></extra>"
+    ))
+
+    layout = get_dark_plotly_layout(height=480, title="")
+    layout["title"] = None
+    layout["legend"] = dict(
+        orientation="h",
+        yanchor="bottom",
+        y=1.07,
+        xanchor="center",
+        x=0.5,
+        bgcolor="rgba(0,0,0,0)",
+        font=dict(size=11.5, color="#C2CBD6")
+    )
+    layout["margin"] = dict(l=65, r=25, t=75, b=45)
+    layout["yaxis"]["title"] = "Độ sụt giảm từ đỉnh (Underwater Drawdown %)"
+    layout["yaxis"]["ticksuffix"] = "%"
+    layout["xaxis"]["title"] = backtest_res.get("dataset_label", f"Thời gian ({len(dates)} phiên)")
+    fig.update_layout(layout)
+    return fig
+
+def plot_real_dual_chart(backtest_res: dict, model_name: str, horizon: str, threshold: float) -> go.Figure:
+    """
+    Vẽ biểu đồ kết hợp song song 2 khung:
+    - Khung trên: Đường cong tăng trưởng vốn (Equity Curve %)
+    - Khung dưới: Đường cong sụt giảm vốn (Underwater Drawdown %)
+    Đồng bộ trục thời gian chuẩn tắc Bloomberg Quant Terminal.
+    """
+    dates = backtest_res["dates"]
+    ai_cum = backtest_res["equity_ai"]
+    bh_cum = backtest_res["equity_bh"]
+    base_cum = backtest_res["equity_base"]
+    ai_dd = backtest_res["drawdown_ai"]
+    bh_dd = backtest_res["drawdown_bh"]
+
+    m_ai = backtest_res["metrics_ai"]
+    m_bh = backtest_res["metrics_bh"]
+
+    fig = make_subplots(
+        rows=2, cols=1,
+        shared_xaxes=True,
+        vertical_spacing=0.14,
+        row_heights=[0.66, 0.34],
+        subplot_titles=[
+            f"Tăng trưởng vốn lũy kế (Equity Curve: {model_name} {horizon})",
+            "Độ sụt giảm vốn tối đa từ đỉnh (Underwater Max Drawdown %)"
+        ]
+    )
+
+    # Khung 1: Equity
+    fig.add_trace(go.Scatter(
+        x=dates, y=ai_cum, mode="lines",
+        name=f"AI: {model_name} ({horizon}) [{m_ai['cum_ret']:+.2f}% | Sharpe {m_ai['sharpe']:.2f}]",
+        line=dict(color=cfg.COLOR_BULLISH, width=3.0),
+        hovertemplate="<b>%{x|%d/%m/%Y}</b><br>AI Lợi nhuận: <b>%{y:+.2f}%</b><extra></extra>"
+    ), row=1, col=1)
+
+    fig.add_trace(go.Scatter(
+        x=dates, y=bh_cum, mode="lines",
+        name=f"S&P 500 Benchmark [{m_bh['cum_ret']:+.2f}% | Sharpe {m_bh['sharpe']:.2f}]",
+        line=dict(color="#A0AEC0", width=1.8, dash="dash"),
+        hovertemplate="<b>%{x|%d/%m/%Y}</b><br>S&P 500: <b>%{y:+.2f}%</b><extra></extra>"
+    ), row=1, col=1)
+
+    fig.add_trace(go.Scatter(
+        x=dates, y=base_cum, mode="lines",
+        name=f"Gốc P = 0.50 [{backtest_res['metrics_base']['cum_ret']:+.2f}%]",
+        line=dict(color=cfg.COLOR_BEARISH, width=1.4, dash="dot"),
+        hovertemplate="<b>%{x|%d/%m/%Y}</b><br>Gốc 0.50: <b>%{y:+.2f}%</b><extra></extra>"
+    ), row=1, col=1)
+
+    # Khung 2: Drawdown
+    fig.add_trace(go.Scatter(
+        x=dates, y=ai_dd, mode="lines",
+        name=f"AI Drawdown ({m_ai['mdd']:.2f}%)",
+        line=dict(color=cfg.COLOR_BULLISH, width=2.0),
+        fill="tozeroy", fillcolor="rgba(0, 229, 153, 0.18)",
+        hovertemplate="<b>%{x|%d/%m/%Y}</b><br>AI Drawdown: <b>%{y:.2f}%</b><extra></extra>"
+    ), row=2, col=1)
+
+    fig.add_trace(go.Scatter(
+        x=dates, y=bh_dd, mode="lines",
+        name=f"S&P 500 Drawdown ({m_bh['mdd']:.2f}%)",
+        line=dict(color=cfg.COLOR_BEARISH, width=1.6, dash="dash"),
+        fill="tozeroy", fillcolor="rgba(255, 77, 79, 0.12)",
+        hovertemplate="<b>%{x|%d/%m/%Y}</b><br>S&P 500 Drawdown: <b>%{y:.2f}%</b><extra></extra>"
+    ), row=2, col=1)
+
+    layout = get_dark_plotly_layout(height=650, title="")
+    layout["title"] = None
+    layout["legend"] = dict(
+        orientation="h",
+        yanchor="bottom",
+        y=1.09,
+        xanchor="center",
+        x=0.5,
+        bgcolor="rgba(0,0,0,0)",
+        font=dict(size=11, color="#C2CBD6")
+    )
+    layout["margin"] = dict(l=65, r=25, t=95, b=45)
+    fig.update_layout(layout)
+
+    # Style subplot annotations to have crisp font and ample separation
+    for ann in fig['layout']['annotations']:
+        ann['font'] = dict(size=12, color="#E2E8F0", family="'Inter', sans-serif")
+        if "Tăng trưởng" in ann['text']:
+            ann['y'] = 1.01
+
+    fig.update_yaxes(title_text="Lợi nhuận (%)", ticksuffix="%", row=1, col=1)
+    fig.update_yaxes(title_text="Sụt giảm (%)", ticksuffix="%", row=2, col=1)
+    fig.update_xaxes(title_text=backtest_res.get("dataset_label", f"Thời gian ({len(dates)} phiên)"), row=2, col=1)
+    return fig
+
+def plot_feature_importance_for_model(df_feats: pd.DataFrame, model_name: str, horizon: str) -> go.Figure:
+    """
+    Vẽ biểu đồ thanh ngang Top 10 đặc trưng quan trọng của chính mô hình và khung thời gian được chọn.
+    Phân loại màu sắc trực quan:
+    - Vàng ánh kim (#d97706): Đặc trưng quan trọng số 1 (Top 1)
+    - Xanh thép thanh lịch (#2563eb): Nhóm chỉ báo kỹ thuật thị trường
+    - Xanh ngọc lục bảo sâu (#059669): Nhóm chỉ báo tâm lý tin tức FinBERT
+    """
+    if df_feats is None or df_feats.empty:
+        return plot_feature_importance_consensus()
+
+    is_consensus = any(w in model_name.lower() for w in ["consensus", "đồng thuận", "ensemble", "lai"])
+    df_plot = df_feats.copy().head(10)
+
+    col_val = "Tầm quan trọng (%)" if "Tầm quan trọng (%)" in df_plot.columns else "importance"
+    col_name = "Tên đặc trưng" if "Tên đặc trưng" in df_plot.columns else "feature"
+    col_type = "Nhóm bản chất" if "Nhóm bản chất" in df_plot.columns else "type"
+
+    # Sắp xếp cho hiển thị thanh ngang từ trên xuống dưới
+    if is_consensus:
+        df_plot = df_plot.sort_values(col_val, ascending=False)
+        text_labels = [f"Hạng {v:.2f}" for v in df_plot[col_val]]
+        x_title = "Điểm hạng đồng thuận trung bình (điểm càng nhỏ thứ hạng càng cao)"
+    else:
+        df_plot = df_plot.sort_values(col_val, ascending=True)
+        text_labels = [f"{v:.2f}%" for v in df_plot[col_val]]
+        x_title = "Đóng góp tầm quan trọng chuẩn hóa (%)"
+
+    colors = []
+    line_colors = []
+    vals = df_plot[col_val].values
+    max_idx = len(vals) - 1  # Vì ascending=True, phần tử cuối là lớn nhất
+
+    for idx, (_, r) in enumerate(df_plot.iterrows()):
+        feat_type = str(r[col_type])
+        if idx == max_idx and not is_consensus:
+            colors.append("#d97706")          # Top 1: Vàng ánh kim cao cấp
+            line_colors.append("#f59e0b")
+        elif "cảm xúc" in feat_type.lower() or "finbert" in feat_type.lower() or "sent" in str(r[col_name]):
+            colors.append("#059669")          # Nhóm cảm xúc FinBERT
+            line_colors.append("#10b981")
+        else:
+            colors.append("#2563eb")          # Nhóm kỹ thuật
+            line_colors.append("rgba(255, 255, 255, 0.15)")
+
+    fig = go.Figure(go.Bar(
+        x=df_plot[col_val],
+        y=df_plot[col_name],
+        orientation="h",
+        marker=dict(color=colors, line=dict(color=line_colors, width=1)),
+        text=text_labels,
+        textfont=dict(color="#f1f5f9", family="JetBrains Mono, monospace", size=11),
+        textposition="inside",
+        insidetextanchor="middle",
+        hovertemplate="<b>%{y}</b>: %{x:.2f}%<extra></extra>" if not is_consensus else "<b>%{y}</b>: Hạng %{x:.2f}<extra></extra>"
+    ))
+
+    layout = get_dark_plotly_layout(
+        height=400,
+        title=f"Top 10 đặc trưng quan trọng qua {model_name} ({horizon})"
+    )
+    layout["xaxis"]["title"] = x_title
+    layout["yaxis"]["autorange"] = True
+    layout["margin"] = dict(l=85, r=20, t=45, b=40)
+    fig.update_layout(layout)
+    return fig
+
+def plot_equity_curves() -> go.Figure:
+    """
+    Hàm tương thích ngược: Thực thi kiểm định ngoài mẫu thực tế và vẽ đường cong vốn.
+    Đảm bảo 100% tính toán thực nghiệm, không còn hạt giống giả lập.
+    """
+    from modules.backtester import run_out_of_sample_backtest
+    res = run_out_of_sample_backtest("Random Forest", "T+5", 0.42)
+    return plot_real_equity_curve(res, "Random Forest", "T+5", 0.42)
+
 
 def plot_whatif_feature_attribution(whatif_res: dict) -> go.Figure:
     """
