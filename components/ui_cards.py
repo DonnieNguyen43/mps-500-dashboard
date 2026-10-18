@@ -626,3 +626,99 @@ Giải trình 3 kênh truyền dẫn vĩ mô định lượng (Explainability En
         df_display = pd.DataFrame(rows_data)
         st.markdown("**Bảng ma trận biến động đặc trưng cảm xúc vĩ mô sau cú sốc biên:**")
         st.dataframe(df_display, use_container_width=True, hide_index=True)
+
+
+def render_confidence_gauge_card(prob_5d: float, threshold: float = 0.42) -> str:
+    """
+    Render Thẻ Đo lường ngưỡng tự tin (T+5) dạng SVG thuần đối xứng tâm học thuật.
+    Đảm bảo 100% căn giữa toán học tuyệt đối (sai số 0px), loại bỏ hoàn toàn các lỗi
+    lệch khung hình, scrollbar và méo tọa độ của Plotly Indicator trên mọi độ phân giải.
+    """
+    import math
+
+    val_pct = prob_5d * 100.0
+    threshold_pct = threshold * 100.0
+
+    cx, cy = 190.0, 162.0
+    r_out = 120.0
+    thickness = 22.0
+    r_in = r_out - thickness  # 98.0
+
+    def pt(deg, radius):
+        rad = math.radians(deg)
+        return cx - radius * math.cos(rad), cy - radius * math.sin(rad)
+
+    def arc_d(p1, p2, ro, ri):
+        d1 = (p1 / 100.0) * 180.0
+        d2 = (p2 / 100.0) * 180.0
+        x1_out, y1_out = pt(d1, ro)
+        x2_out, y2_out = pt(d2, ro)
+        x2_in, y2_in = pt(d2, ri)
+        x1_in, y1_in = pt(d1, ri)
+        large_arc = 1 if (d2 - d1) > 180.0 else 0
+        return f"M {x1_out:.2f} {y1_out:.2f} A {ro:.2f} {ro:.2f} 0 {large_arc} 1 {x2_out:.2f} {y2_out:.2f} L {x2_in:.2f} {y2_in:.2f} A {ri:.2f} {ri:.2f} 0 {large_arc} 0 {x1_in:.2f} {y1_in:.2f} Z"
+
+    # Background zones
+    d_warning = arc_d(0.0, threshold_pct, r_out, r_in)
+    d_safe = arc_d(threshold_pct, 100.0, r_out, r_in)
+
+    # Active bar (clamped for visual smoothness)
+    active_color = "#10B981" if val_pct >= threshold_pct else "#F43F5E"
+    clamped_val = min(max(val_pct, 0.5), 99.5)
+    active_d = arc_d(0.0, clamped_val, r_out, r_in)
+
+    # Threshold marker line at 42%
+    th_deg = (threshold_pct / 100.0) * 180.0
+    th_x1, th_y1 = pt(th_deg, r_out + 4.0)
+    th_x2, th_y2 = pt(th_deg, r_in - 4.0)
+
+    # Scale ticks at 0, 20, 40, 60, 80, 100
+    ticks_svg = []
+    for t_val in [0, 20, 40, 60, 80, 100]:
+        t_deg = (t_val / 100.0) * 180.0
+        tx1, ty1 = pt(t_deg, r_out + 3.0)
+        tx2, ty2 = pt(t_deg, r_out + 9.0)
+        lx, ly = pt(t_deg, r_out + 21.0)
+        ticks_svg.append(f'<line x1="{tx1:.1f}" y1="{ty1:.1f}" x2="{tx2:.1f}" y2="{ty2:.1f}" stroke="#64748B" stroke-width="1.5" />')
+        ticks_svg.append(f'<text x="{lx:.1f}" y="{ly + 4.0:.1f}" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" font-weight="500" fill="#94A3B8">{t_val}</text>')
+
+    delta_val = val_pct - threshold_pct
+    delta_sign = "+" if delta_val >= 0 else ""
+    delta_color = "#10B981" if delta_val >= 0 else "#F43F5E"
+    arrow = "▲" if delta_val >= 0 else "▼"
+
+    card_html = f"""
+    <div class="quant-card" style="padding: 20px 22px 18px 22px; border-radius: 16px; margin-bottom: 12px; text-align: center; background: linear-gradient(145deg, rgba(6, 28, 24, 0.78) 0%, rgba(9, 17, 24, 0.85) 100%); border: 1px solid rgba(0, 229, 153, 0.22); box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);">
+        <div style="font-size: 13px; font-weight: 700; color: #F8FAFC; letter-spacing: 0.6px; text-transform: uppercase; margin-bottom: 4px; font-family: Inter, -apple-system, sans-serif;">
+            Đo lường ngưỡng tự tin (T+5)
+        </div>
+        <div style="font-size: 11.5px; color: #94A3B8; margin-bottom: 12px; font-family: Inter, sans-serif;">
+            Vùng an toàn ≥ 42.0% | Vùng cảnh báo rủi ro &lt; 42.0%
+        </div>
+        <svg viewBox="0 0 380 205" style="width: 100%; max-width: 440px; height: auto; display: block; margin: 0 auto;">
+            <!-- Background Tracks -->
+            <path d="{d_warning}" fill="rgba(244, 63, 94, 0.16)" stroke="rgba(244, 63, 94, 0.30)" stroke-width="1" />
+            <path d="{d_safe}" fill="rgba(16, 185, 129, 0.16)" stroke="rgba(16, 185, 129, 0.30)" stroke-width="1" />
+
+            <!-- Active Progress Arc -->
+            <path d="{active_d}" fill="{active_color}" filter="drop-shadow(0 0 8px {active_color}55)" />
+
+            <!-- Threshold White Needle -->
+            <line x1="{th_x1:.1f}" y1="{th_y1:.1f}" x2="{th_x2:.1f}" y2="{th_y2:.1f}" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" filter="drop-shadow(0 0 4px rgba(255,255,255,0.85))" />
+
+            <!-- Scale Ticks -->
+            {''.join(ticks_svg)}
+
+            <!-- Exact Center Value -->
+            <text x="190" y="142" text-anchor="middle" font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" font-size="35" font-weight="700" fill="#F8FAFC" letter-spacing="-0.5px">
+                {val_pct:.1f}%
+            </text>
+
+            <!-- Centered Delta -->
+            <text x="190" y="166" text-anchor="middle" font-family="Inter, -apple-system, sans-serif" font-size="12" font-weight="600" fill="{delta_color}">
+                {arrow} {delta_sign}{delta_val:.1f}% vs ngưỡng 42.0%
+            </text>
+        </svg>
+    </div>
+    """
+    return card_html

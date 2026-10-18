@@ -47,6 +47,7 @@ from utils.model_loader import (
 import streamlit.components.v1 as components
 
 from components.ui_cards import (
+    render_confidence_gauge_card,
     render_hero_intro,
     render_terminal_header, render_market_metric_cards,
     render_recommendation_banner, render_whatif_alert_card,
@@ -213,8 +214,10 @@ with st.container(key="quant_section_1"):
 
     with col_gauge:
         st.markdown("##### Đo lường xung lực và tham số kỹ thuật")
-        fig_gauge = plot_confidence_gauge(forecast_result["prob_t5"], threshold=threshold_input)
-        st.plotly_chart(fig_gauge, use_container_width=True, config={'displayModeBar': False})
+        st.markdown(
+            render_confidence_gauge_card(forecast_result["prob_t5"], threshold=threshold_input),
+            unsafe_allow_html=True
+        )
 
         rsi_val = float(calc_market_df['rsi_14'].iloc[-1])
         macd_val = float(calc_market_df['macd_diff'].iloc[-1])
